@@ -54,7 +54,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.gephi.streaming.api.Issue;
 import org.gephi.streaming.api.Report;
-import org.gephi.ui.utils.BusyUtils;
+import org.gephi.ui.components.BusyUtils;
 import org.netbeans.swing.outline.DefaultOutlineModel;
 import org.netbeans.swing.outline.OutlineModel;
 import org.netbeans.swing.outline.RenderDataProvider;
