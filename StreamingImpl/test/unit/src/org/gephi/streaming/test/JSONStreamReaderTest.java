@@ -432,6 +432,52 @@ public class JSONStreamReaderTest {
         assertNotNull(event);
         assertEquals(Double.valueOf(999.), event.getTimestamp());
     }
+    
+    @Test
+    public void testUnicodeEvent() throws IOException {
+        HeapEventHandler handler = new HeapEventHandler();
+
+        StreamReaderFactory factory = Lookup.getDefault().lookup(StreamReaderFactory.class);
+        GraphEventBuilder eventBuilder = new GraphEventBuilder(this);
+        StreamReader streamReader = factory.createStreamReader(streamType, handler, eventBuilder);
+        
+        String evstr = "{\"an\":{\"Unicode1\":{\"label\":\"Съешь же ещё этих мягких французских булок да выпей чаю.\"}}}\n\r";
+        ByteArrayInputStream bais = new ByteArrayInputStream(evstr.getBytes());
+
+        streamReader.processStream(bais);
+        GraphEvent event = handler.getGraphEvent();
+        assertNotNull(event);
+        assertEquals(EventType.ADD, event.getEventType());
+        assertEquals(ElementType.NODE, event.getElementType());
+        assertEquals(ElementEvent.class, event.getClass());
+        assertEquals("Unicode1", ((ElementEvent)event).getElementId());
+        //System.out.println(((ElementEvent)event).getAttributes().get("label"));
+        assertEquals("Съешь же ещё этих мягких французских булок да выпей чаю.", 
+                ((ElementEvent)event).getAttributes().get("label"));
+    }
+    
+    @Test
+    public void testEscapedUnicodeEvent() throws IOException {
+        HeapEventHandler handler = new HeapEventHandler();
+
+        StreamReaderFactory factory = Lookup.getDefault().lookup(StreamReaderFactory.class);
+        GraphEventBuilder eventBuilder = new GraphEventBuilder(this);
+        StreamReader streamReader = factory.createStreamReader(streamType, handler, eventBuilder);
+        
+        String evstr = "{\"an\":{\"Unicode2\":{\"label\":\"\\u0421\\u044a\\u0435\\u0448\\u044c \\u0436\\u0435 \\u0435\\u0449\\u0451 \\u044d\\u0442\\u0438\\u0445 \\u043c\\u044f\\u0433\\u043a\\u0438\\u0445 \\u0444\\u0440\\u0430\\u043d\\u0446\\u0443\\u0437\\u0441\\u043a\\u0438\\u0445 \\u0431\\u0443\\u043b\\u043e\\u043a \\u0434\\u0430 \\u0432\\u044b\\u043f\\u0435\\u0439 \\u0447\\u0430\\u044e.\"}}}\n\r";
+        ByteArrayInputStream bais = new ByteArrayInputStream(evstr.getBytes());
+
+        streamReader.processStream(bais);
+        GraphEvent event = handler.getGraphEvent();
+        assertNotNull(event);
+        assertEquals(EventType.ADD, event.getEventType());
+        assertEquals(ElementType.NODE, event.getElementType());
+        assertEquals(ElementEvent.class, event.getClass());
+        assertEquals("Unicode2", ((ElementEvent)event).getElementId());
+        //System.out.println(((ElementEvent)event).getAttributes().get("label"));
+        assertEquals("Съешь же ещё этих мягких французских булок да выпей чаю.", 
+                ((ElementEvent)event).getAttributes().get("label"));
+    }
 
     private class HeapEventHandler implements GraphEventHandler {
 
@@ -455,6 +501,24 @@ public class JSONStreamReaderTest {
     private class StringBufferedInputStream extends InputStream {
         private final StringBuffer buffer = new StringBuffer();
 
+        @Override
+        public int read(byte b[], int off, int len) throws IOException {
+            if (b == null) {
+                throw new NullPointerException();
+            } else if (off < 0 || len < 0 || len > b.length - off) {
+                throw new IndexOutOfBoundsException();
+            } else if (len == 0) {
+                return 0;
+            }
+
+            int c = read();
+            if (c == -1) {
+                return -1;
+            }
+            b[off] = (byte)c;
+            return 1;
+        }
+        
         @Override
         public int read() throws IOException {
             int read = 0;

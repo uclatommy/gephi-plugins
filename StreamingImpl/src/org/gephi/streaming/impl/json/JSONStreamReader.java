@@ -43,6 +43,7 @@ package org.gephi.streaming.impl.json;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.Channels;
@@ -102,11 +103,13 @@ public class JSONStreamReader extends StreamReader {
 
 //        this.processStream(Channels.newChannel(inputStream), listener);
 
-         StringBuilder content = new StringBuilder(1024);
+        StringBuilder content = new StringBuilder(1024);
+        
+        InputStreamReader reader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
 
         try {
             int read;
-            while ((read = inputStream.read())!=-1) {
+            while ((read = reader.read())!=-1) {
                 char readChar = (char)read;
                 if (readChar == '\r') {
                     if (listener!=null) {
