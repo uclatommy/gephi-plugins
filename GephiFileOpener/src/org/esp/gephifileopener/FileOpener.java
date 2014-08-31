@@ -114,12 +114,12 @@ public class FileOpener implements Tool {
     }
 
     Desktop desktop = Desktop.getDesktop();
-    if (!desktop.isSupported(Desktop.Action.EDIT)) {
+    if (!desktop.isSupported(Desktop.Action.OPEN)) {
       return false;
     }
 
     try {
-      desktop.edit(file);
+      desktop.open(file);
     } catch (IOException e) {
       // Log an error
       return false;
