@@ -6,12 +6,10 @@
 
 package org.esp.gephifileopener;
 
-import java.awt.Desktop;
-import java.io.File;
-import java.io.IOException;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeRow;
 import org.gephi.data.attributes.api.AttributeTable;
@@ -25,22 +23,29 @@ import org.gephi.tools.spi.ToolUI;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
+import org.openide.windows.WindowManager;
 
 /**
  *
  * @author Thomas
  */
 @ServiceProvider(service = Tool.class)
-public class FileOpener implements Tool {
+public class nodeSelector implements Tool {
     private EditWindowController edc;
-    private final String column = "cppFile";
+    private String filename;
+    private editCPPTopComponent ectc;
 
     @Override
     public void select() {
         edc=Lookup.getDefault().lookup(EditWindowController.class);
         edc.openEditWindow();
+        ectc = findInstance();
     }
 
+    private editCPPTopComponent findInstance(){
+        return (editCPPTopComponent) WindowManager.getDefault().findTopComponent("editCPPTopComponent");
+    }
+    
     @Override
     public void unselect() {
         edc.disableEdit();
@@ -50,6 +55,7 @@ public class FileOpener implements Tool {
     @Override
     public ToolEventListener[] getListeners() {
         return new ToolEventListener[]{new NodeClickEventListener() {
+            private final String column = "cppFile";
 
                 @Override
                 public void clickNodes(Node[] nodes) {
@@ -58,10 +64,17 @@ public class FileOpener implements Tool {
                         AttributeTable table = Lookup.getDefault().lookup(AttributeController.class).getModel().getNodeTable();
                         if (table.hasColumn(column)) {
                             AttributeRow row = (AttributeRow) nodes[0].getNodeData().getAttributes();
-                            Object value;
+                            final Object value;
                             if ((value = row.getValue(column)) != null) {
-                                File cpp = new File(value.toString());
-                                editFile(cpp);
+                                filename = value.toString();
+                                SwingUtilities.invokeLater(new Runnable() 
+                                {
+                                  public void run()
+                                  {
+                                    ectc.setFilename(filename);
+                                    ectc.setFileContent(ectc.readFile(filename));
+                                  }
+                                });    
                             }
                         }
                     } else {
@@ -88,12 +101,12 @@ public class FileOpener implements Tool {
 
             @Override
             public String getName() {
-                return NbBundle.getMessage(FileOpener.class, "OpenIDE-Module-Name");
+                return NbBundle.getMessage(editCPPTopComponent.class, "OpenIDE-Module-Name");
             }
 
             @Override
             public String getDescription() {
-                return NbBundle.getMessage(FileOpener.class, "OpenIDE-Module-Short-Description");
+                return NbBundle.getMessage(editCPPTopComponent.class, "OpenIDE-Module-Short-Description");
             }
 
             @Override
@@ -107,24 +120,4 @@ public class FileOpener implements Tool {
     public ToolSelectionType getSelectionType() {
         return ToolSelectionType.SELECTION;
     }
-    
-  public boolean editFile(final File file) {
-    if (!Desktop.isDesktopSupported()) {
-      return false;
-    }
-
-    Desktop desktop = Desktop.getDesktop();
-    if (!desktop.isSupported(Desktop.Action.OPEN)) {
-      return false;
-    }
-
-    try {
-      desktop.open(file);
-    } catch (IOException e) {
-      // Log an error
-      return false;
-    }
-
-    return true;
-  }
 }
