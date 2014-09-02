@@ -9,10 +9,12 @@ import java.awt.Desktop;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import jsyntaxpane.DefaultSyntaxKit;
@@ -152,7 +154,7 @@ public final class editCPPTopComponent extends TopComponent {
         });
         jToolBar2.add(revertButton);
 
-        repoLogButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/calendar.png"))); // NOI18N
+        repoLogButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/comments.png"))); // NOI18N
         repoLogButton.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.repoLogButton.toolTipText")); // NOI18N
         repoLogButton.setFocusable(false);
         repoLogButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -423,10 +425,8 @@ public final class editCPPTopComponent extends TopComponent {
     public String readFile(String readFilename){
         String text = "Error.";
         try{
-            FileReader in = new FileReader(readFilename);
-            char[] buffer = new char[1024];
-            int n = in.read(buffer);
-            text = new String(buffer, 0, n);
+            byte[] encoded = Files.readAllBytes(Paths.get(readFilename));
+            text = new String(encoded, Charset.defaultCharset());
         } catch (IOException ex){
             Exceptions.printStackTrace(ex);
         }
