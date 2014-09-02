@@ -13,9 +13,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import static java.lang.Compiler.command;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import jsyntaxpane.DefaultSyntaxKit;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -46,7 +44,6 @@ preferredID = "editCPPTopComponent")
     "HINT_editCPPTopComponent=This is a code editor window"
 })
 public final class editCPPTopComponent extends TopComponent {
-    
     public editCPPTopComponent() {
         initComponents();
         setName(Bundle.CTL_editCPPTopComponent());
@@ -64,11 +61,20 @@ public final class editCPPTopComponent extends TopComponent {
         jScrollPane1 = new javax.swing.JScrollPane();
         codePane = new javax.swing.JEditorPane();
         jToolBar1 = new javax.swing.JToolBar();
-        openButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
-        filenameField = new javax.swing.JTextField();
         refreshButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        filenameField = new javax.swing.JTextField();
+        jToolBar2 = new javax.swing.JToolBar();
+        commitButton = new javax.swing.JButton();
+        updateButton = new javax.swing.JButton();
+        revertButton = new javax.swing.JButton();
+        repoLogButton = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JToolBar.Separator();
+        diffButton = new javax.swing.JButton();
+        repoBrowseButton = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
+        openButton = new javax.swing.JButton();
+        parentDirButton = new javax.swing.JButton();
 
         setName("codePanel"); // NOI18N
 
@@ -77,15 +83,6 @@ public final class editCPPTopComponent extends TopComponent {
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
-
-        openButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/duplicateWorkspace.png"))); // NOI18N
-        openButton.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.openButton.toolTipText")); // NOI18N
-        openButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                openButtonMouseClicked(evt);
-            }
-        });
-        jToolBar1.add(openButton);
 
         saveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/saveProject.png"))); // NOI18N
         saveButton.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.saveButton.toolTipText")); // NOI18N
@@ -99,10 +96,6 @@ public final class editCPPTopComponent extends TopComponent {
         });
         jToolBar1.add(saveButton);
 
-        filenameField.setText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.filenameField.text")); // NOI18N
-        filenameField.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.filenameField.toolTipText")); // NOI18N
-        jToolBar1.add(filenameField);
-
         refreshButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/refresh.png"))); // NOI18N
         refreshButton.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.refreshButton.toolTipText")); // NOI18N
         refreshButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -112,16 +105,108 @@ public final class editCPPTopComponent extends TopComponent {
         });
         jToolBar1.add(refreshButton);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jButton1, org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.jButton1.text")); // NOI18N
-        jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+        filenameField.setText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.filenameField.text")); // NOI18N
+        filenameField.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.filenameField.toolTipText")); // NOI18N
+        jToolBar1.add(filenameField);
+
+        jToolBar2.setFloatable(false);
+        jToolBar2.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        jToolBar2.setRollover(true);
+
+        commitButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/accept.png"))); // NOI18N
+        commitButton.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.commitButton.toolTipText")); // NOI18N
+        commitButton.setFocusable(false);
+        commitButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        commitButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        commitButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
+                commitButtonMouseClicked(evt);
             }
         });
-        jToolBar1.add(jButton1);
+        jToolBar2.add(commitButton);
+
+        updateButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/basket_put.png"))); // NOI18N
+        updateButton.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.updateButton.toolTipText")); // NOI18N
+        updateButton.setFocusable(false);
+        updateButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        updateButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        updateButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                updateButtonMouseClicked(evt);
+            }
+        });
+        jToolBar2.add(updateButton);
+
+        revertButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/bomb.png"))); // NOI18N
+        revertButton.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.revertButton.toolTipText")); // NOI18N
+        revertButton.setFocusable(false);
+        revertButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        revertButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        revertButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                revertButtonMouseClicked(evt);
+            }
+        });
+        jToolBar2.add(revertButton);
+
+        repoLogButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/calendar.png"))); // NOI18N
+        repoLogButton.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.repoLogButton.toolTipText")); // NOI18N
+        repoLogButton.setFocusable(false);
+        repoLogButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        repoLogButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        repoLogButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                repoLogButtonMouseClicked(evt);
+            }
+        });
+        jToolBar2.add(repoLogButton);
+        jToolBar2.add(jSeparator1);
+
+        diffButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/table_row_insert.png"))); // NOI18N
+        diffButton.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.diffButton.toolTipText")); // NOI18N
+        diffButton.setFocusable(false);
+        diffButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        diffButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        diffButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                diffButtonMouseClicked(evt);
+            }
+        });
+        jToolBar2.add(diffButton);
+
+        repoBrowseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/application_side_tree.png"))); // NOI18N
+        repoBrowseButton.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.repoBrowseButton.toolTipText")); // NOI18N
+        repoBrowseButton.setFocusable(false);
+        repoBrowseButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        repoBrowseButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        repoBrowseButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                repoBrowseButtonMouseClicked(evt);
+            }
+        });
+        jToolBar2.add(repoBrowseButton);
+        jToolBar2.add(jSeparator2);
+
+        openButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/application_get.png"))); // NOI18N
+        openButton.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.openButton.toolTipText")); // NOI18N
+        openButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                openButtonMouseClicked(evt);
+            }
+        });
+        jToolBar2.add(openButton);
+
+        parentDirButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/folder.png"))); // NOI18N
+        parentDirButton.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.parentDirButton.toolTipText")); // NOI18N
+        parentDirButton.setFocusable(false);
+        parentDirButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        parentDirButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        parentDirButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                parentDirButtonMouseClicked(evt);
+            }
+        });
+        jToolBar2.add(parentDirButton);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -130,8 +215,11 @@ public final class editCPPTopComponent extends TopComponent {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE))
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -140,7 +228,9 @@ public final class editCPPTopComponent extends TopComponent {
                 .addContainerGap()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
+                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -151,7 +241,10 @@ public final class editCPPTopComponent extends TopComponent {
         // TODO add your handling code here:
         String filename = filenameField.getText();
         File cpp = new File(filename);
-        editFile(cpp);
+        if(cpp.isFile() && cpp.exists())
+        {
+            editFile(cpp);
+        }
     }//GEN-LAST:event_openButtonMouseClicked
 
     private void refreshButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_refreshButtonMouseClicked
@@ -169,19 +262,96 @@ public final class editCPPTopComponent extends TopComponent {
         saveButton.setToolTipText("Save the file.");
     }//GEN-LAST:event_saveButtonMouseExited
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        runCMD("ipconfig");
-    }//GEN-LAST:event_jButton1MouseClicked
+    private void repoLogButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_repoLogButtonMouseClicked
+        if(filenameField.getText() != null){
+            runCMD(tsvnLog(filenameField.getText()));
+        }
+    }//GEN-LAST:event_repoLogButtonMouseClicked
+
+    private void repoBrowseButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_repoBrowseButtonMouseClicked
+        // TODO add your handling code here:
+        if(filenameField.getText() != null){
+            runCMD(tsvnRepoBrowser(filenameField.getText()));
+        }
+    }//GEN-LAST:event_repoBrowseButtonMouseClicked
+
+    private void commitButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_commitButtonMouseClicked
+        // TODO add your handling code here:
+        if(filenameField.getText() != null){
+            saveFile();
+            SwingUtilities.invokeLater(new Runnable() 
+            {
+                public void run()
+                {
+                  runCMD(tsvnCommit(filenameField.getText()));
+                }
+            });
+        }
+    }//GEN-LAST:event_commitButtonMouseClicked
+
+    private void updateButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_updateButtonMouseClicked
+        // TODO add your handling code here:
+        if(filenameField.getText() != null){
+            runCMD(tsvnUpdate(filenameField.getText(), true));
+            SwingUtilities.invokeLater(new Runnable() 
+            {
+                public void run()
+                {
+                  setFileContent(readFile(filenameField.getText()));
+                }
+            });
+        }
+    }//GEN-LAST:event_updateButtonMouseClicked
+
+    private void revertButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_revertButtonMouseClicked
+        // TODO add your handling code here:
+        if(filenameField.getText() != null){
+            runCMD(tsvnRevert(filenameField.getText()));
+            SwingUtilities.invokeLater(new Runnable() 
+            {
+                public void run()
+                {
+                  setFileContent(readFile(filenameField.getText()));
+                }
+            });
+        }
+    }//GEN-LAST:event_revertButtonMouseClicked
+
+    private void diffButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_diffButtonMouseClicked
+        // TODO add your handling code here:
+        if(filenameField.getText() != null){
+            runCMD(tsvnDiff(filenameField.getText()));
+        }
+    }//GEN-LAST:event_diffButtonMouseClicked
+
+    private void parentDirButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_parentDirButtonMouseClicked
+        // TODO add your handling code here:
+        File file = new File(filenameField.getText());
+        if (!file.isDirectory() && file.isFile())
+           file = file.getParentFile();
+        if (file.exists() && file.isDirectory()){
+            editFile(file);
+        }
+    }//GEN-LAST:event_parentDirButtonMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JEditorPane codePane;
+    private javax.swing.JButton commitButton;
+    private javax.swing.JButton diffButton;
     private javax.swing.JTextField filenameField;
-    private javax.swing.JButton jButton1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JToolBar jToolBar2;
     private javax.swing.JButton openButton;
+    private javax.swing.JButton parentDirButton;
     private javax.swing.JButton refreshButton;
+    private javax.swing.JButton repoBrowseButton;
+    private javax.swing.JButton repoLogButton;
+    private javax.swing.JButton revertButton;
     private javax.swing.JButton saveButton;
+    private javax.swing.JButton updateButton;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
@@ -229,7 +399,16 @@ public final class editCPPTopComponent extends TopComponent {
     
     public void setFilename(String filename)
     {
-        filenameField.setText(filename);
+        File file = new File(filename);
+        if(file.exists())
+        {
+            filenameField.setText(filename);
+        }
+        else
+        {
+            filenameField.setText("");
+            codePane.setText("");
+        }
     }
     
     public void setFileContent(String content){
@@ -268,9 +447,8 @@ public final class editCPPTopComponent extends TopComponent {
     
     public void runCMD(String cmd){
         try {
-            // Run "netsh" Windows command
             Process process = Runtime.getRuntime().exec(cmd);
-
+            
             // Get input streams
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
             BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -290,5 +468,38 @@ public final class editCPPTopComponent extends TopComponent {
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
+    }
+    
+    private String tsvnLog(String filename){
+        return "TortoiseProc /command:log /path:\"" + filename +"\"";
+    }
+    
+    private String tsvnRepoBrowser(String filename){
+        return "TortoiseProc /command:repobrowser /path:\"" + filename +"\"";
+    }
+    
+    private String tsvnDiff(String filename){
+        return "TortoiseProc /command:diff /path:\"" + filename +"\"";
+    }
+    
+    private String tsvnRepoStatus(String filename){
+        return "TortoiseProc /command:repostatus /path:\"" + filename +"\"";
+    }
+    
+    private String tsvnUpdate(String filename, boolean promptRev){
+        String command = "TortoiseProc /command:update /path:\"" + filename +"\"";
+        if(promptRev)
+        {
+            command = command + " /rev";
+        }
+        return command;
+    }
+    
+    private String tsvnCommit(String filename){
+        return "TortoiseProc /command:commit /path:\"" + filename +"\"";
+    }
+    
+    private String tsvnRevert(String filename){
+        return "TortoiseProc /command:revert /path:\"" + filename +"\"";
     }
 }

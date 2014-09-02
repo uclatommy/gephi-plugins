@@ -76,6 +76,10 @@ public class nodeSelector implements Tool {
                                   }
                                 });    
                             }
+                            else
+                            {
+                                ectc.setFilename("");
+                            }
                         }
                     } else {
                         edc.disableEdit();
@@ -96,7 +100,7 @@ public class nodeSelector implements Tool {
 
             @Override
             public Icon getIcon() {
-                return new ImageIcon(getClass().getResource("/org/esp/gephifileopener/fileopener.png"));
+                return new ImageIcon(getClass().getResource("/org/esp/gephifileopener/page_white_cplusplus.png"));
             }
 
             @Override
