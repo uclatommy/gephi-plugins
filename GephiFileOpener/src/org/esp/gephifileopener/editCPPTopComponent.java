@@ -20,6 +20,7 @@ import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.Exceptions;
+import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 
@@ -44,6 +45,7 @@ preferredID = "editCPPTopComponent")
     "HINT_editCPPTopComponent=This is a code editor window"
 })
 public final class editCPPTopComponent extends TopComponent {
+    final private String ICON_PATH = "/org/esp/gephifileopener/page_white_cplusplus.png";
     public editCPPTopComponent() {
         initComponents();
         setName(Bundle.CTL_editCPPTopComponent());
@@ -76,6 +78,7 @@ public final class editCPPTopComponent extends TopComponent {
         openButton = new javax.swing.JButton();
         parentDirButton = new javax.swing.JButton();
 
+        setIcon(ImageUtilities.loadImage(ICON_PATH, true));
         setName("codePanel"); // NOI18N
 
         codePane.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.codePane.toolTipText")); // NOI18N
