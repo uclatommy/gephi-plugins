@@ -69,6 +69,8 @@ public final class editCPPTopComponent extends TopComponent {
         refreshButton = new javax.swing.JButton();
         filenameField = new javax.swing.JTextField();
         jToolBar2 = new javax.swing.JToolBar();
+        contSaveToggle = new javax.swing.JToggleButton();
+        jSeparator3 = new javax.swing.JToolBar.Separator();
         commitButton = new javax.swing.JButton();
         updateButton = new javax.swing.JButton();
         revertButton = new javax.swing.JButton();
@@ -117,6 +119,14 @@ public final class editCPPTopComponent extends TopComponent {
         jToolBar2.setFloatable(false);
         jToolBar2.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jToolBar2.setRollover(true);
+
+        contSaveToggle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/film_save.png"))); // NOI18N
+        contSaveToggle.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.contSaveToggle.toolTipText")); // NOI18N
+        contSaveToggle.setFocusable(false);
+        contSaveToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        contSaveToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar2.add(contSaveToggle);
+        jToolBar2.add(jSeparator3);
 
         commitButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/accept.png"))); // NOI18N
         commitButton.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.commitButton.toolTipText")); // NOI18N
@@ -248,18 +258,22 @@ public final class editCPPTopComponent extends TopComponent {
         File cpp = new File(filename);
         if(cpp.isFile() && cpp.exists())
         {
+            if(contSaveToggle.isSelected())
+            {
+                checkSave(filenameField.getText()); //potential bug
+            }
             editFile(cpp);
         }
     }//GEN-LAST:event_openButtonMouseClicked
 
     private void refreshButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_refreshButtonMouseClicked
         // TODO add your handling code here:
-        setFileContent(readFile(filenameField.getText()));
+        setFileContent(filenameField.getText(),false);
     }//GEN-LAST:event_refreshButtonMouseClicked
 
     private void saveButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveButtonMouseClicked
         // TODO add your handling code here:
-        saveFile();
+        checkSave(filenameField.getText()); //potential bug
     }//GEN-LAST:event_saveButtonMouseClicked
 
     private void saveButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveButtonMouseExited
@@ -283,7 +297,7 @@ public final class editCPPTopComponent extends TopComponent {
     private void commitButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_commitButtonMouseClicked
         // TODO add your handling code here:
         if(filenameField.getText() != null){
-            saveFile();
+            checkSave(filenameField.getText()); //potential bug
             SwingUtilities.invokeLater(new Runnable() 
             {
                 public void run()
@@ -302,7 +316,7 @@ public final class editCPPTopComponent extends TopComponent {
             {
                 public void run()
                 {
-                  setFileContent(readFile(filenameField.getText()));
+                  setFileContent(filenameField.getText(),false);
                 }
             });
         }
@@ -316,7 +330,7 @@ public final class editCPPTopComponent extends TopComponent {
             {
                 public void run()
                 {
-                  setFileContent(readFile(filenameField.getText()));
+                  setFileContent(filenameField.getText(),false);
                 }
             });
         }
@@ -342,11 +356,13 @@ public final class editCPPTopComponent extends TopComponent {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JEditorPane codePane;
     private javax.swing.JButton commitButton;
+    private javax.swing.JToggleButton contSaveToggle;
     private javax.swing.JButton diffButton;
     private javax.swing.JTextField filenameField;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
+    private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JButton openButton;
@@ -362,7 +378,7 @@ public final class editCPPTopComponent extends TopComponent {
     public void componentOpened() {
         // TODO add custom code on component opening
         DefaultSyntaxKit.initKit();
-        
+        codePane.setContentType("text/cpp");
     }
 
     @Override
@@ -402,27 +418,53 @@ public final class editCPPTopComponent extends TopComponent {
         return true;
     }
     
-    public void setFilename(String filename)
+    public boolean setFilename(String filename)
     {
+        System.out.println(filename);
         File file = new File(filename);
         if(file.exists())
         {
-            filenameField.setText(filename);
+            String currentFilename = filenameField.getText();
+            if(!currentFilename.equals(filename) && filename!=null)
+            {    
+                filenameField.setText(filename);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
+            if(contSaveToggle.isSelected())
+            {
+                checkSave(filenameField.getText());  //potential bug if filenameField does not correspond to contents of codePane
+            }
             filenameField.setText("");
             codePane.setText("");
+            return false;
         }
     }
     
-    public void setFileContent(String content){
-        codePane.setContentType("text/cpp");
-        codePane.setText(content);
-        jScrollPane1.setVisible(true);
+    public void setFileContent(final String filename, boolean respectSaveToggle){
+        if(respectSaveToggle && contSaveToggle.isSelected())
+        {
+            checkSave(filename);
+        }
+        SwingUtilities.invokeLater(new Runnable() 
+        {
+          public void run()
+          {
+            if(setFilename(filename)){
+                codePane.setText(readFile(filename));
+                jScrollPane1.setVisible(true);
+            }
+          }
+        });
     }
     
-    public String readFile(String readFilename){
+    private static String readFile(String readFilename){
         String text = "Error.";
         try{
             byte[] encoded = Files.readAllBytes(Paths.get(readFilename));
@@ -433,9 +475,22 @@ public final class editCPPTopComponent extends TopComponent {
         return text;
     }
     
-    public void saveFile(){
+    public void checkSave(String filename){
+        String currentFile = filenameField.getText();
+        File file = new File(currentFile);
+        if(file.isFile() && file.exists())
+        {
+            if(filename.equals(currentFile)){
+                saveFile(filename);
+            } else{
+                saveFile(currentFile);
+            }
+        }
+    }
+    
+    private void saveFile(String fileToSave){
         try {
-            FileWriter out = new FileWriter(filenameField.getText());
+            FileWriter out = new FileWriter(fileToSave);
             out.write(codePane.getText());
             out.close();
             saveButton.setToolTipText("Saved.");
@@ -468,7 +523,7 @@ public final class editCPPTopComponent extends TopComponent {
             while ((s = stdError.readLine()) != null) {
                 System.out.println(s);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace(System.err);
         }
     }

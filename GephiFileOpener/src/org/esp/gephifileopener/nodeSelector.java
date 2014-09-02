@@ -9,7 +9,6 @@ package org.esp.gephifileopener;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeRow;
 import org.gephi.data.attributes.api.AttributeTable;
@@ -67,14 +66,7 @@ public class nodeSelector implements Tool {
                             final Object value;
                             if ((value = row.getValue(column)) != null) {
                                 filename = value.toString();
-                                SwingUtilities.invokeLater(new Runnable() 
-                                {
-                                  public void run()
-                                  {
-                                    ectc.setFilename(filename);
-                                    ectc.setFileContent(ectc.readFile(filename));
-                                  }
-                                });    
+                                ectc.setFileContent(filename, true);
                             }
                             else
                             {
