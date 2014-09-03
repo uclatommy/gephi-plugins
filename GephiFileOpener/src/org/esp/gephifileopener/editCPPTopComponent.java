@@ -312,13 +312,7 @@ public final class editCPPTopComponent extends TopComponent {
         // TODO add your handling code here:
         if(filenameField.getText() != null){
             runCMD(tsvnUpdate(filenameField.getText(), true));
-            SwingUtilities.invokeLater(new Runnable() 
-            {
-                public void run()
-                {
-                  setFileContent(filenameField.getText(),false);
-                }
-            });
+            setFileContent(filenameField.getText(),false);
         }
     }//GEN-LAST:event_updateButtonMouseClicked
 
@@ -326,13 +320,8 @@ public final class editCPPTopComponent extends TopComponent {
         // TODO add your handling code here:
         if(filenameField.getText() != null){
             runCMD(tsvnRevert(filenameField.getText()));
-            SwingUtilities.invokeLater(new Runnable() 
-            {
-                public void run()
-                {
-                  setFileContent(filenameField.getText(),false);
-                }
-            });
+            setFileContent(filenameField.getText(),false);
+            
         }
     }//GEN-LAST:event_revertButtonMouseClicked
 
@@ -425,15 +414,8 @@ public final class editCPPTopComponent extends TopComponent {
         if(file.exists())
         {
             String currentFilename = filenameField.getText();
-            if(!currentFilename.equals(filename) && filename!=null)
-            {    
-                filenameField.setText(filename);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            filenameField.setText(filename);
+            return true;
         }
         else
         {
