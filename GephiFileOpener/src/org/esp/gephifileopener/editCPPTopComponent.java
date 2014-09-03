@@ -23,6 +23,7 @@ import jsyntaxpane.DefaultSyntaxKit;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeRow;
 import org.gephi.data.attributes.api.AttributeTable;
+import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.Node;
@@ -60,6 +61,7 @@ public final class editCPPTopComponent extends TopComponent {
     final private String ICON_PATH = "/org/esp/gephifileopener/page_white_cplusplus.png";
     private Node currentRootNode;
     private Node[] currentNeighbors;
+    private final Graph graph = Lookup.getDefault().lookup(GraphController.class).getModel().getGraph();
     public editCPPTopComponent() {
         initComponents();
         setName(Bundle.CTL_editCPPTopComponent());
@@ -463,6 +465,7 @@ public final class editCPPTopComponent extends TopComponent {
     }
     
     public void setSelection(){
+        VizController.getInstance().getSelectionManager().resetSelection();
         if(currentRootNode!=null && currentNeighbors != null)
         {
             List<Node> list = new ArrayList<Node>();
@@ -474,6 +477,7 @@ public final class editCPPTopComponent extends TopComponent {
             }
             Node[] nodeArray = list.toArray(new Node[list.size()]);
             VizController.getInstance().getSelectionManager().selectNodes(nodeArray);
+            VizController.getInstance().getSelectionManager().selectEdges(graph.getEdges(currentRootNode).toArray());
         }
     }
     
@@ -625,7 +629,6 @@ public final class editCPPTopComponent extends TopComponent {
     }
     
     public void editNode(Node node){
-        Graph graph = Lookup.getDefault().lookup(GraphController.class).getModel().getGraph();
         setNeighbors(node, graph.getNeighbors(node).toArray());
         AttributeTable table = Lookup.getDefault().lookup(AttributeController.class).getModel().getNodeTable();
         String column = "cppFile";
