@@ -15,14 +15,24 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import jsyntaxpane.DefaultSyntaxKit;
+import org.gephi.data.attributes.api.AttributeController;
+import org.gephi.data.attributes.api.AttributeRow;
+import org.gephi.data.attributes.api.AttributeTable;
+import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.GraphController;
+import org.gephi.graph.api.Node;
+import org.gephi.visualization.VizController;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 
@@ -48,6 +58,8 @@ preferredID = "editCPPTopComponent")
 })
 public final class editCPPTopComponent extends TopComponent {
     final private String ICON_PATH = "/org/esp/gephifileopener/page_white_cplusplus.png";
+    private Node currentRootNode;
+    private Node[] currentNeighbors;
     public editCPPTopComponent() {
         initComponents();
         setName(Bundle.CTL_editCPPTopComponent());
@@ -81,11 +93,21 @@ public final class editCPPTopComponent extends TopComponent {
         jSeparator2 = new javax.swing.JToolBar.Separator();
         openButton = new javax.swing.JButton();
         parentDirButton = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        neighborNodesList = new javax.swing.JList();
 
         setIcon(ImageUtilities.loadImage(ICON_PATH, true));
         setName("codePanel"); // NOI18N
 
         codePane.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.codePane.toolTipText")); // NOI18N
+        codePane.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                codePaneFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                codePaneFocusLost(evt);
+            }
+        });
         jScrollPane1.setViewportView(codePane);
 
         jToolBar1.setFloatable(false);
@@ -223,6 +245,24 @@ public final class editCPPTopComponent extends TopComponent {
         });
         jToolBar2.add(parentDirButton);
 
+        neighborNodesList.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        neighborNodesList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        neighborNodesList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                neighborNodesListMouseClicked(evt);
+            }
+        });
+        neighborNodesList.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                neighborNodesListFocusLost(evt);
+            }
+        });
+        jScrollPane2.setViewportView(neighborNodesList);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -234,7 +274,9 @@ public final class editCPPTopComponent extends TopComponent {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -245,7 +287,8 @@ public final class editCPPTopComponent extends TopComponent {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
-                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
                 .addContainerGap())
         );
 
@@ -342,6 +385,36 @@ public final class editCPPTopComponent extends TopComponent {
         }
     }//GEN-LAST:event_parentDirButtonMouseClicked
 
+    private void neighborNodesListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_neighborNodesListMouseClicked
+        // TODO add your handling code here:
+        if(evt.getClickCount() == 2 && !evt.isConsumed()){
+            evt.consume();
+            nodeListWrapper wrappedNode = (nodeListWrapper) neighborNodesList.getSelectedValue();
+            Node gotoNode = wrappedNode.getNode();
+            if(gotoNode != null)
+            {
+                //VizController.getInstance().getSelectionManager().centerOnNode(gotoNode);
+                editNode(gotoNode);
+                setSelection();
+            }
+        }
+    }//GEN-LAST:event_neighborNodesListMouseClicked
+
+    private void codePaneFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codePaneFocusGained
+        // TODO add your handling code here:
+        setSelection();
+    }//GEN-LAST:event_codePaneFocusGained
+
+    private void codePaneFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codePaneFocusLost
+        // TODO add your handling code here:
+        VizController.getInstance().getSelectionManager().resetSelection();
+    }//GEN-LAST:event_codePaneFocusLost
+
+    private void neighborNodesListFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_neighborNodesListFocusLost
+        // TODO add your handling code here:
+        VizController.getInstance().getSelectionManager().resetSelection();
+    }//GEN-LAST:event_neighborNodesListFocusLost
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JEditorPane codePane;
     private javax.swing.JButton commitButton;
@@ -349,11 +422,13 @@ public final class editCPPTopComponent extends TopComponent {
     private javax.swing.JButton diffButton;
     private javax.swing.JTextField filenameField;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
+    private javax.swing.JList neighborNodesList;
     private javax.swing.JButton openButton;
     private javax.swing.JButton parentDirButton;
     private javax.swing.JButton refreshButton;
@@ -369,7 +444,7 @@ public final class editCPPTopComponent extends TopComponent {
         DefaultSyntaxKit.initKit();
         codePane.setContentType("text/cpp");
     }
-
+    
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
@@ -385,6 +460,21 @@ public final class editCPPTopComponent extends TopComponent {
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
+    }
+    
+    public void setSelection(){
+        if(currentRootNode!=null && currentNeighbors != null)
+        {
+            List<Node> list = new ArrayList<Node>();
+            list.add(currentRootNode);
+            for(Node node: currentNeighbors)
+            {
+                //System.out.println(node);
+                list.add(node);
+            }
+            Node[] nodeArray = list.toArray(new Node[list.size()]);
+            VizController.getInstance().getSelectionManager().selectNodes(nodeArray);
+        }
     }
     
     public boolean editFile(final File file) {
@@ -509,7 +599,50 @@ public final class editCPPTopComponent extends TopComponent {
             e.printStackTrace(System.err);
         }
     }
+    class nodeListWrapper {
+        private final Node node;
+        nodeListWrapper(Node inNode){
+            node = inNode;
+        }
+        private Node getNode(){
+            return node;
+        }
+        @Override
+        public String toString(){
+            AttributeRow row = (AttributeRow) node.getNodeData().getAttributes();
+            return row.getValue("prod") + "_" + row.getValue("purp") + "->" + node.getNodeData().getLabel();
+        }
+    }
+   
+    public void setNeighbors(Node root, Node[] neighbors){
+        ArrayList<nodeListWrapper> neighborsList = new ArrayList<nodeListWrapper>();
+        for(Node node : neighbors){
+            neighborsList.add(new nodeListWrapper(node));
+        }
+        neighborNodesList.setListData(neighborsList.toArray());
+        currentRootNode = root;
+        currentNeighbors = neighbors;
+    }
     
+    public void editNode(Node node){
+        Graph graph = Lookup.getDefault().lookup(GraphController.class).getModel().getGraph();
+        setNeighbors(node, graph.getNeighbors(node).toArray());
+        AttributeTable table = Lookup.getDefault().lookup(AttributeController.class).getModel().getNodeTable();
+        String column = "cppFile";
+        if (table.hasColumn(column)) 
+        {
+            AttributeRow row = (AttributeRow) node.getNodeData().getAttributes();
+            final Object value;
+            if ((value = row.getValue(column)) != null) 
+            {
+                setFileContent(value.toString(), true);
+            }
+            else
+            {
+                setFilename("");
+            }
+        }
+    }
     private String tsvnLog(String filename){
         return "TortoiseProc /command:log /path:\"" + filename +"\"";
     }

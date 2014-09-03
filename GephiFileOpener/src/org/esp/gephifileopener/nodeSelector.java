@@ -9,9 +9,6 @@ package org.esp.gephifileopener;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-import org.gephi.data.attributes.api.AttributeController;
-import org.gephi.data.attributes.api.AttributeRow;
-import org.gephi.data.attributes.api.AttributeTable;
 import org.gephi.graph.api.Node;
 import org.gephi.tools.api.EditWindowController;
 import org.gephi.tools.spi.NodeClickEventListener;
@@ -31,7 +28,6 @@ import org.openide.windows.WindowManager;
 @ServiceProvider(service = Tool.class)
 public class nodeSelector implements Tool {
     private EditWindowController edc;
-    private String filename;
     private editCPPTopComponent ectc;
 
     @Override
@@ -54,25 +50,11 @@ public class nodeSelector implements Tool {
     @Override
     public ToolEventListener[] getListeners() {
         return new ToolEventListener[]{new NodeClickEventListener() {
-            private final String column = "cppFile";
-
                 @Override
                 public void clickNodes(Node[] nodes) {
                     if (nodes.length > 0) {
                         edc.editNode(nodes[0]);
-                        AttributeTable table = Lookup.getDefault().lookup(AttributeController.class).getModel().getNodeTable();
-                        if (table.hasColumn(column)) {
-                            AttributeRow row = (AttributeRow) nodes[0].getNodeData().getAttributes();
-                            final Object value;
-                            if ((value = row.getValue(column)) != null) {
-                                filename = value.toString();
-                                ectc.setFileContent(filename, true);
-                            }
-                            else
-                            {
-                                ectc.setFilename("");
-                            }
-                        }
+                        ectc.editNode(nodes[0]);
                     } else {
                         edc.disableEdit();
                     }
