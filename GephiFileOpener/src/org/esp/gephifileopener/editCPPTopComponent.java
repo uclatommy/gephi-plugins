@@ -16,7 +16,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import jsyntaxpane.DefaultSyntaxKit;
@@ -60,8 +59,8 @@ preferredID = "editCPPTopComponent")
 public final class editCPPTopComponent extends TopComponent {
     final private String ICON_PATH = "/org/esp/gephifileopener/page_white_cplusplus.png";
     private Node currentRootNode;
-    private Node[] currentNeighbors;
     private final Graph graph = Lookup.getDefault().lookup(GraphController.class).getModel().getGraph();
+    private mosesController mc = new mosesController("");
     public editCPPTopComponent() {
         initComponents();
         setName(Bundle.CTL_editCPPTopComponent());
@@ -84,6 +83,7 @@ public final class editCPPTopComponent extends TopComponent {
         filenameField = new javax.swing.JTextField();
         jToolBar2 = new javax.swing.JToolBar();
         contSaveToggle = new javax.swing.JToggleButton();
+        centerOnNode = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JToolBar.Separator();
         commitButton = new javax.swing.JButton();
         updateButton = new javax.swing.JButton();
@@ -143,6 +143,11 @@ public final class editCPPTopComponent extends TopComponent {
         jToolBar2.setFloatable(false);
         jToolBar2.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jToolBar2.setRollover(true);
+        jToolBar2.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jToolBar2FocusLost(evt);
+            }
+        });
 
         contSaveToggle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/film_save.png"))); // NOI18N
         contSaveToggle.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.contSaveToggle.toolTipText")); // NOI18N
@@ -150,6 +155,18 @@ public final class editCPPTopComponent extends TopComponent {
         contSaveToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         contSaveToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar2.add(contSaveToggle);
+
+        centerOnNode.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/centerOnZero.png"))); // NOI18N
+        centerOnNode.setToolTipText(org.openide.util.NbBundle.getMessage(editCPPTopComponent.class, "editCPPTopComponent.centerOnNode.toolTipText")); // NOI18N
+        centerOnNode.setFocusable(false);
+        centerOnNode.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        centerOnNode.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        centerOnNode.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                centerOnNodeMouseClicked(evt);
+            }
+        });
+        jToolBar2.add(centerOnNode);
         jToolBar2.add(jSeparator3);
 
         commitButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/accept.png"))); // NOI18N
@@ -247,11 +264,6 @@ public final class editCPPTopComponent extends TopComponent {
         });
         jToolBar2.add(parentDirButton);
 
-        neighborNodesList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         neighborNodesList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         neighborNodesList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -259,6 +271,9 @@ public final class editCPPTopComponent extends TopComponent {
             }
         });
         neighborNodesList.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                neighborNodesListFocusGained(evt);
+            }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 neighborNodesListFocusLost(evt);
             }
@@ -288,7 +303,7 @@ public final class editCPPTopComponent extends TopComponent {
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
                     .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane2))
                 .addContainerGap())
@@ -389,23 +404,58 @@ public final class editCPPTopComponent extends TopComponent {
 
     private void neighborNodesListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_neighborNodesListMouseClicked
         // TODO add your handling code here:
-        if(evt.getClickCount() == 2 && !evt.isConsumed()){
-            evt.consume();
-            nodeListWrapper wrappedNode = (nodeListWrapper) neighborNodesList.getSelectedValue();
-            Node gotoNode = wrappedNode.getNode();
-            if(gotoNode != null)
-            {
+        nodeListWrapper wrappedNode = (nodeListWrapper) neighborNodesList.getSelectedValue();
+        Node gotoNode = wrappedNode.getNode();
+        if(gotoNode != null)
+        {
+            /*
+            if(evt.getClickCount() == 1 && !evt.isConsumed()){
+                evt.consume();
+                setPairwiseSelection(currentRootNode,graph.getEdge(gotoNode, currentRootNode));
+            }
+                    */
+            if(evt.getClickCount() == 2 && !evt.isConsumed()){
+                evt.consume();
                 //VizController.getInstance().getSelectionManager().centerOnNode(gotoNode);
                 editNode(gotoNode);
-                setSelection();
+                VizController.getInstance().getSelectionManager().resetSelection();
+                SwingUtilities.invokeLater(new Runnable() 
+                {
+                    public void run()
+                    {
+                        codePane.requestFocusInWindow();
+                    }
+                });
             }
         }
     }//GEN-LAST:event_neighborNodesListMouseClicked
 
     private void codePaneFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codePaneFocusGained
         // TODO add your handling code here:
-        setSelection();
+        VizController.getInstance().getSelectionManager().resetSelection();
+        SwingUtilities.invokeLater(new Runnable() 
+        {
+            public void run()
+            {
+                setSelection();
+            }
+        });
     }//GEN-LAST:event_codePaneFocusGained
+
+    private void centerOnNodeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_centerOnNodeMouseClicked
+        // TODO add your handling code here:
+        if(currentRootNode != null)
+        {
+            VizController.getInstance().getSelectionManager().centerOnNode(currentRootNode);
+            SwingUtilities.invokeLater(new Runnable() 
+            {
+                public void run()
+                {
+                    codePane.requestFocusInWindow();
+                }
+            });
+        }
+    }//GEN-LAST:event_centerOnNodeMouseClicked
 
     private void codePaneFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codePaneFocusLost
         // TODO add your handling code here:
@@ -417,7 +467,25 @@ public final class editCPPTopComponent extends TopComponent {
         VizController.getInstance().getSelectionManager().resetSelection();
     }//GEN-LAST:event_neighborNodesListFocusLost
 
+    private void jToolBar2FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jToolBar2FocusLost
+        // TODO add your handling code here:
+        VizController.getInstance().getSelectionManager().resetSelection();
+    }//GEN-LAST:event_jToolBar2FocusLost
+
+    private void neighborNodesListFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_neighborNodesListFocusGained
+        // TODO add your handling code here:
+        VizController.getInstance().getSelectionManager().resetSelection();
+        SwingUtilities.invokeLater(new Runnable() 
+        {
+            public void run()
+            {
+                setSelection();
+            }
+        });
+    }//GEN-LAST:event_neighborNodesListFocusGained
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton centerOnNode;
     private javax.swing.JEditorPane codePane;
     private javax.swing.JButton commitButton;
     private javax.swing.JToggleButton contSaveToggle;
@@ -466,18 +534,20 @@ public final class editCPPTopComponent extends TopComponent {
     
     public void setSelection(){
         VizController.getInstance().getSelectionManager().resetSelection();
-        if(currentRootNode!=null && currentNeighbors != null)
+        if(currentRootNode!=null)
         {
-            List<Node> list = new ArrayList<Node>();
-            list.add(currentRootNode);
-            for(Node node: currentNeighbors)
-            {
-                //System.out.println(node);
-                list.add(node);
-            }
-            Node[] nodeArray = list.toArray(new Node[list.size()]);
+            Node[] nodeArray = {currentRootNode};
             VizController.getInstance().getSelectionManager().selectNodes(nodeArray);
             VizController.getInstance().getSelectionManager().selectEdges(graph.getEdges(currentRootNode).toArray());
+        }
+    }
+    
+    public void setPairwiseSelection(Node rootNode, Edge pairedEdge){
+        VizController.getInstance().getSelectionManager().resetSelection();
+        if(currentRootNode!=null)
+        {
+            VizController.getInstance().getSelectionManager().selectNode(rootNode);
+            VizController.getInstance().getSelectionManager().selectEdge(pairedEdge);
         }
     }
     
@@ -503,7 +573,7 @@ public final class editCPPTopComponent extends TopComponent {
     
     public boolean setFilename(String filename)
     {
-        System.out.println(filename);
+        //System.out.println(filename);
         File file = new File(filename);
         if(file.exists())
         {
@@ -534,6 +604,7 @@ public final class editCPPTopComponent extends TopComponent {
           {
             if(setFilename(filename)){
                 codePane.setText(readFile(filename));
+                mc.setModelDirectory(Paths.get(filename).getParent().getParent().getParent().toString());
                 jScrollPane1.setVisible(true);
             }
           }
@@ -544,7 +615,7 @@ public final class editCPPTopComponent extends TopComponent {
         String text = "Error.";
         try{
             byte[] encoded = Files.readAllBytes(Paths.get(readFilename));
-            text = new String(encoded, Charset.defaultCharset());
+            text = new String(encoded, Charset.defaultCharset());            
         } catch (IOException ex){
             Exceptions.printStackTrace(ex);
         }
@@ -569,6 +640,11 @@ public final class editCPPTopComponent extends TopComponent {
             FileWriter out = new FileWriter(fileToSave);
             out.write(codePane.getText());
             out.close();
+            //System.out.println("Save path is " + Paths.get(fileToSave).getParent().getParent().toString());
+            mc.updateFML(currentRootNode);
+            AttributeRow row = (AttributeRow) currentRootNode.getNodeData().getAttributes();
+            //System.out.println("getId(): "+ currentRootNode.getId() + "getValue(): " + row.getValue("Id").toString());
+            mc.updateFML(currentRootNode,codePane.getText());
             saveButton.setToolTipText("Saved.");
             ToolTipManager.sharedInstance().mouseMoved(
                 new MouseEvent(saveButton, 0, 0, 0,
@@ -577,6 +653,7 @@ public final class editCPPTopComponent extends TopComponent {
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
+        
     }
     
     public void runCMD(String cmd){
@@ -625,7 +702,6 @@ public final class editCPPTopComponent extends TopComponent {
         }
         neighborNodesList.setListData(neighborsList.toArray());
         currentRootNode = root;
-        currentNeighbors = neighbors;
     }
     
     public void editNode(Node node){
