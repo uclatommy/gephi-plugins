@@ -22,11 +22,11 @@ import org.openide.util.Exceptions;
  *
  * @author thchen
  */
-public class mosesController {
+public class MosesController {
     private String modelDirectory;
     final private String stels_driver = "jstels.jdbc.dbf.DBFDriver2";
     
-    public mosesController(String model_directory)
+    public MosesController(String model_directory)
     {
         modelDirectory = model_directory;
     }
