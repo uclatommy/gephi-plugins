@@ -7,6 +7,7 @@
 package org.esp.gephifileopener;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,6 +15,9 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.gephi.data.attributes.api.AttributeRow;
 import org.gephi.graph.api.Node;
 import org.openide.util.Exceptions;
@@ -24,6 +28,8 @@ import org.openide.util.Exceptions;
  */
 public class MosesController {
     private String modelDirectory;
+    private String outputDirectory;
+    private String outputFile;
     final private String stels_driver = "jstels.jdbc.dbf.DBFDriver2";
     
     public MosesController(String model_directory)
@@ -34,6 +40,30 @@ public class MosesController {
     public void setModelDirectory(String model_directory)
     {
         modelDirectory = model_directory;
+    }
+    
+    public void setOutputDirectory(String output)
+    {
+        outputDirectory = output;
+    }
+    
+    public ArrayList<String> ms_ListModels(String PathNameBase)
+    {
+        File folder = new File(PathNameBase);
+        File[] listOfFiles = folder.listFiles();
+        ArrayList<String> result = new ArrayList<String>();
+        String pattern = "(.*)\\$[Ii][Nn][Ff][Oo]\\.[Dd][Bb][Ff]";
+        for (File listOfFile : listOfFiles) {
+            if (listOfFile.isFile()) {
+                if (listOfFile.getName().matches(pattern)) {
+                    String[] s = listOfFile.getName().split("\\$");
+                    result.add(s[0].trim());
+                }
+            } else if (listOfFile.isDirectory()) {
+                System.out.println("Directory " + listOfFile.getName());
+            }
+        }
+        return result;
     }
     
     public void updateFML(Node node, String content)

@@ -103,6 +103,7 @@ public final class PanelsTopComponent extends TopComponent {
         precedentsButton = new javax.swing.JButton();
         resetButton = new javax.swing.JButton();
         dependentsButton = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         jToolBar4 = new javax.swing.JToolBar();
         refreshButton = new javax.swing.JButton();
         filenameField = new javax.swing.JTextField();
@@ -310,6 +311,17 @@ public final class PanelsTopComponent extends TopComponent {
         });
         jToolBar3.add(dependentsButton);
 
+        org.openide.awt.Mnemonics.setLocalizedText(jButton1, org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.jButton1.text")); // NOI18N
+        jButton1.setFocusable(false);
+        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
+        jToolBar3.add(jButton1);
+
         jToolBar4.setFloatable(false);
         jToolBar4.setRollover(true);
 
@@ -499,6 +511,15 @@ public final class PanelsTopComponent extends TopComponent {
         requestFocus();
     }//GEN-LAST:event_resetButtonMouseClicked
 
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // TODO add your handling code here:
+        ArrayList<String> outfiles =  mc.ms_ListModels("C:\\temp\\esp-pension-alm\\output");
+        for(String outfile: outfiles)
+        {
+            System.out.println(outfile);
+        }
+    }//GEN-LAST:event_jButton1MouseClicked
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton centerOnNode;
     private javax.swing.JEditorPane codePane;
@@ -507,6 +528,7 @@ public final class PanelsTopComponent extends TopComponent {
     private javax.swing.JButton dependentsButton;
     private javax.swing.JButton diffButton;
     private javax.swing.JTextField filenameField;
+    private javax.swing.JButton jButton1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
