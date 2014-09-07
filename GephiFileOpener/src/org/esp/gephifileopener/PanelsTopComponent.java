@@ -211,9 +211,6 @@ public final class PanelsTopComponent extends TopComponent {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 codePaneFocusGained(evt);
             }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                codePaneFocusLost(evt);
-            }
         });
         jScrollPane1.setViewportView(codePane);
 
@@ -482,11 +479,6 @@ public final class PanelsTopComponent extends TopComponent {
         nsm.centerOnRoot();
         codePane.requestFocusInWindow();
     }//GEN-LAST:event_centerOnNodeMouseClicked
-
-    private void codePaneFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codePaneFocusLost
-        // TODO add your handling code here:
-        nsm.resetSelection();
-    }//GEN-LAST:event_codePaneFocusLost
 
     private void neighborNodesListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_neighborNodesListValueChanged
         // TODO add your handling code here:
