@@ -94,9 +94,26 @@ public class NodeSelectionManager{
         displaySelection();
     }
     
-    public void popDependents()
+    public void pushPrecedents()
     {
-        
+        ArrayList<Edge> nextSelection = new ArrayList<Edge>();
+        ArrayList<Node> selectedNodes = new ArrayList<Node>();
+        for(Edge edge: currentSelection) //loop through current selected edges
+        {
+            selectedNodes.add(edge.getSource()); //for each edge in selection, add source node to selected nodes array
+        }
+        for(Node node: selectedNodes) //for each node in selected nodes array, loop though in edges
+        {
+            for(Edge edge: dgraph.getInEdges(node))//add each in edge to next selection array
+            {
+                nextSelection.add(edge);
+            }
+        }
+        for(Edge edge: nextSelection) //for each edge in next selection array,
+        {
+            currentSelection.add(edge);//add to current selection
+        }
+        displaySelection();
     }
     
     public void setPairwiseSelection(final Node opposite){

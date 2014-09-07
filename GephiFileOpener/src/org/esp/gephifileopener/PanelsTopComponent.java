@@ -5,6 +5,7 @@
  */
 package org.esp.gephifileopener;
 
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -18,6 +19,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import jsyntaxpane.DefaultSyntaxKit;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeRow;
@@ -79,12 +82,7 @@ public final class PanelsTopComponent extends TopComponent {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jToolBar1 = new javax.swing.JToolBar();
-        saveButton = new javax.swing.JButton();
-        refreshButton = new javax.swing.JButton();
-        filenameField = new javax.swing.JTextField();
         jToolBar2 = new javax.swing.JToolBar();
-        contSaveToggle = new javax.swing.JToggleButton();
         centerOnNode = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JToolBar.Separator();
         commitButton = new javax.swing.JButton();
@@ -94,57 +92,30 @@ public final class PanelsTopComponent extends TopComponent {
         jSeparator1 = new javax.swing.JToolBar.Separator();
         diffButton = new javax.swing.JButton();
         repoBrowseButton = new javax.swing.JButton();
-        jSeparator2 = new javax.swing.JToolBar.Separator();
-        openButton = new javax.swing.JButton();
-        parentDirButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         codePane = new javax.swing.JEditorPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         neighborNodesList = new javax.swing.JList();
+        jToolBar3 = new javax.swing.JToolBar();
+        saveButton = new javax.swing.JButton();
+        contSaveToggle = new javax.swing.JToggleButton();
+        parentDirButton = new javax.swing.JButton();
+        openButton = new javax.swing.JButton();
+        jSeparator4 = new javax.swing.JToolBar.Separator();
+        precedentsButton = new javax.swing.JButton();
+        resetButton = new javax.swing.JButton();
+        dependentsButton = new javax.swing.JButton();
+        jToolBar4 = new javax.swing.JToolBar();
+        refreshButton = new javax.swing.JButton();
+        filenameField = new javax.swing.JTextField();
 
         setIcon(ImageUtilities.loadImage(ICON_PATH, true));
         setName("codePanel"); // NOI18N
 
-        jToolBar1.setFloatable(false);
-        jToolBar1.setRollover(true);
-
-        saveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/saveProject.png"))); // NOI18N
-        saveButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.saveButton.toolTipText")); // NOI18N
-        saveButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                saveButtonMouseClicked(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                saveButtonMouseExited(evt);
-            }
-        });
-        jToolBar1.add(saveButton);
-
-        refreshButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/refresh.png"))); // NOI18N
-        refreshButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.refreshButton.toolTipText")); // NOI18N
-        refreshButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                refreshButtonMouseClicked(evt);
-            }
-        });
-        jToolBar1.add(refreshButton);
-
-        filenameField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.filenameField.text")); // NOI18N
-        filenameField.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.filenameField.toolTipText")); // NOI18N
-        jToolBar1.add(filenameField);
-
         jToolBar2.setFloatable(false);
         jToolBar2.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jToolBar2.setRollover(true);
-
-        contSaveToggle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/film_save.png"))); // NOI18N
-        contSaveToggle.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.contSaveToggle.toolTipText")); // NOI18N
-        contSaveToggle.setFocusable(false);
-        contSaveToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        contSaveToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar2.add(contSaveToggle);
 
         centerOnNode.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/centerOnZero.png"))); // NOI18N
         centerOnNode.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.centerOnNode.toolTipText")); // NOI18N
@@ -208,7 +179,7 @@ public final class PanelsTopComponent extends TopComponent {
         jToolBar2.add(repoLogButton);
         jToolBar2.add(jSeparator1);
 
-        diffButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/table_row_insert.png"))); // NOI18N
+        diffButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/application_tile_horizontal.png"))); // NOI18N
         diffButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.diffButton.toolTipText")); // NOI18N
         diffButton.setFocusable(false);
         diffButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -220,7 +191,7 @@ public final class PanelsTopComponent extends TopComponent {
         });
         jToolBar2.add(diffButton);
 
-        repoBrowseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/application_side_tree.png"))); // NOI18N
+        repoBrowseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/application_home.png"))); // NOI18N
         repoBrowseButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.repoBrowseButton.toolTipText")); // NOI18N
         repoBrowseButton.setFocusable(false);
         repoBrowseButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -231,39 +202,6 @@ public final class PanelsTopComponent extends TopComponent {
             }
         });
         jToolBar2.add(repoBrowseButton);
-        jToolBar2.add(jSeparator2);
-
-        openButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/application_get.png"))); // NOI18N
-        openButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.openButton.toolTipText")); // NOI18N
-        openButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                openButtonMouseClicked(evt);
-            }
-        });
-        jToolBar2.add(openButton);
-
-        parentDirButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/folder.png"))); // NOI18N
-        parentDirButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.parentDirButton.toolTipText")); // NOI18N
-        parentDirButton.setFocusable(false);
-        parentDirButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        parentDirButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        parentDirButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                parentDirButtonMouseClicked(evt);
-            }
-        });
-        jToolBar2.add(parentDirButton);
-
-        org.openide.awt.Mnemonics.setLocalizedText(jButton1, org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.jButton1.text")); // NOI18N
-        jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
-        jToolBar2.add(jButton1);
 
         jSplitPane1.setDividerLocation(1000);
         jSplitPane1.setLastDividerLocation(1000);
@@ -299,30 +237,128 @@ public final class PanelsTopComponent extends TopComponent {
 
         jSplitPane1.setRightComponent(jScrollPane2);
 
+        jToolBar3.setFloatable(false);
+        jToolBar3.setRollover(true);
+
+        saveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/saveProject.png"))); // NOI18N
+        saveButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.saveButton.toolTipText")); // NOI18N
+        saveButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                saveButtonMouseClicked(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                saveButtonMouseExited(evt);
+            }
+        });
+        jToolBar3.add(saveButton);
+
+        contSaveToggle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/film_save.png"))); // NOI18N
+        contSaveToggle.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.contSaveToggle.toolTipText")); // NOI18N
+        contSaveToggle.setFocusable(false);
+        contSaveToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        contSaveToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar3.add(contSaveToggle);
+
+        parentDirButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/folder.png"))); // NOI18N
+        parentDirButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.parentDirButton.toolTipText")); // NOI18N
+        parentDirButton.setFocusable(false);
+        parentDirButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        parentDirButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        parentDirButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                parentDirButtonMouseClicked(evt);
+            }
+        });
+        jToolBar3.add(parentDirButton);
+
+        openButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/application_get.png"))); // NOI18N
+        openButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.openButton.toolTipText")); // NOI18N
+        openButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                openButtonMouseClicked(evt);
+            }
+        });
+        jToolBar3.add(openButton);
+        jToolBar3.add(jSeparator4);
+
+        precedentsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/control_rewind_blue.png"))); // NOI18N
+        precedentsButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.precedentsButton.toolTipText")); // NOI18N
+        precedentsButton.setFocusable(false);
+        precedentsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        precedentsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        precedentsButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                precedentsButtonMousePressed(evt);
+            }
+        });
+        jToolBar3.add(precedentsButton);
+
+        resetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/control_stop_blue.png"))); // NOI18N
+        resetButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.resetButton.toolTipText")); // NOI18N
+        resetButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        resetButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        resetButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                resetButtonMouseClicked(evt);
+            }
+        });
+        jToolBar3.add(resetButton);
+
+        dependentsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/control_fastforward_blue.png"))); // NOI18N
+        dependentsButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.dependentsButton.toolTipText")); // NOI18N
+        dependentsButton.setFocusable(false);
+        dependentsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        dependentsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        dependentsButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dependentsButtonMouseClicked(evt);
+            }
+        });
+        jToolBar3.add(dependentsButton);
+
+        jToolBar4.setFloatable(false);
+        jToolBar4.setRollover(true);
+
+        refreshButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/refresh.png"))); // NOI18N
+        refreshButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.refreshButton.toolTipText")); // NOI18N
+        refreshButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                refreshButtonMouseClicked(evt);
+            }
+        });
+        jToolBar4.add(refreshButton);
+
+        filenameField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.filenameField.text")); // NOI18N
+        filenameField.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.filenameField.toolTipText")); // NOI18N
+        jToolBar4.add(filenameField);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 1179, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(6, 6, 6)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jToolBar4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jToolBar3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1156, Short.MAX_VALUE)))
+                .addGap(6, 6, 6))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(6, 6, 6)
+                .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jToolBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
-                    .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
+                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(6, 6, 6))
         );
 
         getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.AccessibleContext.accessibleName")); // NOI18N
@@ -427,6 +463,8 @@ public final class PanelsTopComponent extends TopComponent {
                 evt.consume();
                 //nsm.resetSelection();
                 setPairNode(gotoNode);
+                Color c = new Color(gotoNode.getNodeData().r(),gotoNode.getNodeData().g(),gotoNode.getNodeData().b());
+                markAll(gotoNode.getNodeData().getLabel(),c);
             }
             if(evt.getClickCount() == 2 && !evt.isConsumed()){
                 evt.consume();
@@ -453,38 +491,52 @@ public final class PanelsTopComponent extends TopComponent {
         nsm.resetSelection();
     }//GEN-LAST:event_codePaneFocusLost
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        // TODO add your handling code here:
-        nsm.pushDependents();
-    }//GEN-LAST:event_jButton1MouseClicked
-
     private void neighborNodesListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_neighborNodesListValueChanged
         // TODO add your handling code here:
         nsm.resetSelection();
     }//GEN-LAST:event_neighborNodesListValueChanged
+
+    private void dependentsButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dependentsButtonMouseClicked
+        // TODO add your handling code here:
+        nsm.pushDependents();
+    }//GEN-LAST:event_dependentsButtonMouseClicked
+
+    private void precedentsButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_precedentsButtonMousePressed
+        // TODO add your handling code here:
+        nsm.pushPrecedents();
+    }//GEN-LAST:event_precedentsButtonMousePressed
+
+    private void resetButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_resetButtonMouseClicked
+        // TODO add your handling code here:
+        nsm.resetSelection();
+        requestFocus();
+    }//GEN-LAST:event_resetButtonMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton centerOnNode;
     private javax.swing.JEditorPane codePane;
     private javax.swing.JButton commitButton;
     private javax.swing.JToggleButton contSaveToggle;
+    private javax.swing.JButton dependentsButton;
     private javax.swing.JButton diffButton;
     private javax.swing.JTextField filenameField;
-    private javax.swing.JButton jButton1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
-    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
+    private javax.swing.JToolBar.Separator jSeparator4;
     private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
+    private javax.swing.JToolBar jToolBar3;
+    private javax.swing.JToolBar jToolBar4;
     private javax.swing.JList neighborNodesList;
     private javax.swing.JButton openButton;
     private javax.swing.JButton parentDirButton;
+    private javax.swing.JButton precedentsButton;
     private javax.swing.JButton refreshButton;
     private javax.swing.JButton repoBrowseButton;
     private javax.swing.JButton repoLogButton;
+    private javax.swing.JButton resetButton;
     private javax.swing.JButton revertButton;
     private javax.swing.JButton saveButton;
     private javax.swing.JButton updateButton;
@@ -527,10 +579,61 @@ public final class PanelsTopComponent extends TopComponent {
           desktop.open(file);
         } catch (IOException e) {
           // Log an error
+          Exceptions.printStackTrace(e);
           return false;
         }
 
         return true;
+    }
+    
+    public void markAll(String find, Color c)
+    {
+        Highlighter h = codePane.getHighlighter();
+        h.removeAllHighlights();
+        ArrayList<Integer> allFound = findAll(find);
+        if(allFound!=null)
+        {
+            for(int i: findAll(find))
+            {
+                try
+                {
+                    h.addHighlight(i, i+find.length(), new DefaultHighlighter.DefaultHighlightPainter(c));
+                }
+                catch(Exception e)
+                {
+                    Exceptions.printStackTrace(e);
+                }
+            }
+        }
+    }
+    
+    private ArrayList<Integer> findAll(String find)
+    {
+        ArrayList<Integer> foundIndices = new ArrayList<Integer>();
+        int lastIndex = codePane.getText().lastIndexOf(find);
+        int i=0;
+        int found;
+        if(lastIndex>-1)
+        {
+            while(i<lastIndex)
+            {
+                found = codePane.getText().indexOf(find, i);
+                if(found>-1)
+                {
+                    i=i+find.length();
+                }
+                else
+                {
+                    i = lastIndex;
+                }
+                foundIndices.add(found);
+            }
+            return foundIndices;
+        }
+        else
+        {
+            return null;
+        }
     }
     
     public boolean setFilename(String filename)
@@ -694,6 +797,7 @@ public final class PanelsTopComponent extends TopComponent {
             if ((value = row.getValue(column)) != null) 
             {
                 setFileContent(value.toString(), true);
+                codePane.requestFocus();
             }
             else
             {
