@@ -138,4 +138,14 @@ public class NodeSelectionManager{
         currentSelection.clear();
         sm.resetSelection();
     }
+    
+    public boolean isDependent(Node opposite)
+    {
+        return (dgraph.isSuccessor(currentRootNode, opposite));
+    }
+    
+    public boolean isPrecedent(Node opposite)
+    {
+        return (dgraph.isPredecessor(currentRootNode, opposite));
+    }
 }

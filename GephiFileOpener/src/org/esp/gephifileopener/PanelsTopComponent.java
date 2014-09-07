@@ -59,19 +59,16 @@ preferredID = "editCPPTopComponent")
 })
 public final class PanelsTopComponent extends TopComponent {
     final private String ICON_PATH = "/org/esp/gephifileopener/page_white_cplusplus.png";
-    //private Node currentRootNode;
-    //final private ArrayList<Node> currentSelection = new ArrayList<Node>();
     final private ArrayList<Node> nextSelection = new ArrayList<Node>();
-    //private final Graph graph = Lookup.getDefault().lookup(GraphController.class).getModel().getGraph();
-    //private final DirectedGraph dgraph = Lookup.getDefault().lookup(GraphController.class).getModel().getDirectedGraph();
     private final MosesController mc = new MosesController("");
     private final NodeSelectionManager nsm = new NodeSelectionManager();
-    //private final SelectionManager sm = VizController.getInstance().getSelectionManager();
+    private ComboBoxRenderer renderer;
     
     public PanelsTopComponent() {
         initComponents();
         setName(Bundle.CTL_editCPPTopComponent());
         setToolTipText(Bundle.HINT_editCPPTopComponent());
+        renderer = new ComboBoxRenderer(neighborNodesList);
     }
 
     /**
@@ -464,7 +461,7 @@ public final class PanelsTopComponent extends TopComponent {
                 //nsm.resetSelection();
                 setPairNode(gotoNode);
                 Color c = new Color(gotoNode.getNodeData().r(),gotoNode.getNodeData().g(),gotoNode.getNodeData().b());
-                markAll(gotoNode.getNodeData().getLabel(),c);
+                markAll(gotoNode.getNodeData().getLabel(),renderer.mixColor(c, Color.WHITE));
             }
             if(evt.getClickCount() == 2 && !evt.isConsumed()){
                 evt.consume();
@@ -781,12 +778,23 @@ public final class PanelsTopComponent extends TopComponent {
     }
    
     public void editNode(Node node){
-        //setNeighbors(node, graph.getNeighbors(node).toArray());
         nsm.setRootNode(node);
         ArrayList<NodeListWrapper> neighborsList = new ArrayList<NodeListWrapper>();
+        ArrayList<Integer> displayStyle = new ArrayList<Integer>();
         for(Node nnode : nsm.getNeighbors()){
             neighborsList.add(new NodeListWrapper(nnode));
+            if(nsm.isDependent(nnode))
+            {
+                displayStyle.add((Integer) 0);
+            }
+            else
+            {
+                displayStyle.add((Integer) 1);
+            }
         }
+        renderer.setStyle(displayStyle);
+        renderer.setNodes(neighborsList);
+        neighborNodesList.setCellRenderer(renderer);
         neighborNodesList.setListData(neighborsList.toArray());
         AttributeTable table = Lookup.getDefault().lookup(AttributeController.class).getModel().getNodeTable();
         String column = "cppFile";
