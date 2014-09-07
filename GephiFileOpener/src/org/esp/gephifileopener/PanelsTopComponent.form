@@ -7,11 +7,6 @@
     </Property>
     <Property name="name" type="java.lang.String" value="codePanel" noResource="true"/>
   </Properties>
-  <AccessibilityProperties>
-    <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-      <ResourceString bundle="org/esp/gephifileopener/Bundle.properties" key="PanelsTopComponent.AccessibleContext.accessibleName" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-    </Property>
-  </AccessibilityProperties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="1"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -246,6 +241,9 @@
                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="neighborNodesListMouseClicked"/>
                 <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="neighborNodesListValueChanged"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;NodeListWrapper&gt;"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>

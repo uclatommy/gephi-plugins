@@ -93,7 +93,7 @@ public final class PanelsTopComponent extends TopComponent {
         jScrollPane1 = new javax.swing.JScrollPane();
         codePane = new javax.swing.JEditorPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        neighborNodesList = new javax.swing.JList();
+        neighborNodesList = new javax.swing.JList<NodeListWrapper>();
         jToolBar3 = new javax.swing.JToolBar();
         saveButton = new javax.swing.JButton();
         contSaveToggle = new javax.swing.JToggleButton();
@@ -354,8 +354,6 @@ public final class PanelsTopComponent extends TopComponent {
                     .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(6, 6, 6))
         );
-
-        getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.AccessibleContext.accessibleName")); // NOI18N
     }// </editor-fold>//GEN-END:initComponents
 
     private void openButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openButtonMouseClicked
@@ -450,7 +448,7 @@ public final class PanelsTopComponent extends TopComponent {
 
     private void neighborNodesListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_neighborNodesListMouseClicked
         // TODO add your handling code here:
-        Node gotoNode = ((NodeListWrapper) neighborNodesList.getSelectedValue()).getNode();
+        Node gotoNode = (neighborNodesList.getSelectedValue()).getNode();
         if(gotoNode!=null)
         {
             if(evt.getClickCount() == 1 && !evt.isConsumed()){
@@ -518,7 +516,7 @@ public final class PanelsTopComponent extends TopComponent {
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JToolBar jToolBar3;
     private javax.swing.JToolBar jToolBar4;
-    private javax.swing.JList neighborNodesList;
+    private javax.swing.JList<NodeListWrapper> neighborNodesList;
     private javax.swing.JButton openButton;
     private javax.swing.JButton parentDirButton;
     private javax.swing.JButton precedentsButton;
@@ -787,7 +785,9 @@ public final class PanelsTopComponent extends TopComponent {
         renderer.setStyle(displayStyle);
         renderer.setNodes(neighborsList);
         neighborNodesList.setCellRenderer(renderer);
-        neighborNodesList.setListData(neighborsList.toArray());
+        NodeListWrapper[] tempNLW = new NodeListWrapper[neighborsList.size()];  //create a temporary array
+        tempNLW = neighborsList.toArray(tempNLW);                               //convert neighborsList to array using the typed temp array as argument
+        neighborNodesList.setListData(tempNLW);
         AttributeTable table = Lookup.getDefault().lookup(AttributeController.class).getModel().getNodeTable();
         String column = "cppFile";
         if (table.hasColumn(column)) 

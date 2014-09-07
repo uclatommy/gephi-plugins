@@ -29,7 +29,7 @@ class ComboBoxRenderer extends JPanel implements ListCellRenderer
     JPanel textPanel;
     JLabel text;
     
-    public ComboBoxRenderer(JList list) {
+    public ComboBoxRenderer(JList<NodeListWrapper> list) {
         text = new JLabel();
         text.setOpaque(true);
         text.setFont(list.getFont());
@@ -49,6 +49,7 @@ class ComboBoxRenderer extends JPanel implements ListCellRenderer
     {
         return nodes;
     }
+    
     @Override
     public Component getListCellRendererComponent(JList list, Object value,
             int index, boolean isSelected, boolean cellHasFocus) {
