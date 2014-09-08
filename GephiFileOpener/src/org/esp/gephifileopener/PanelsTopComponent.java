@@ -16,7 +16,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.text.DefaultHighlighter;
@@ -63,6 +65,7 @@ public final class PanelsTopComponent extends TopComponent {
     private final MosesController mc = new MosesController("");
     private final NodeSelectionManager nsm = new NodeSelectionManager();
     private ComboBoxRenderer renderer;
+    int mosesPeriod = 0;
     String mosesDirectory = null, mosesModel = null, mosesGroup = null;
     
     public PanelsTopComponent() {
@@ -109,6 +112,9 @@ public final class PanelsTopComponent extends TopComponent {
         codePane = new javax.swing.JEditorPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         neighborNodesList = new javax.swing.JList<NodeListWrapper>();
+        periodField = new javax.swing.JTextField();
+        mosesOutputField = new javax.swing.JTextField();
+        connectToggle = new javax.swing.JToggleButton();
         jPanel2 = new javax.swing.JPanel();
         chooseButton = new javax.swing.JButton();
         modelNameField = new javax.swing.JTextField();
@@ -335,26 +341,54 @@ public final class PanelsTopComponent extends TopComponent {
 
         jSplitPane1.setRightComponent(jScrollPane2);
 
+        periodField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        periodField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.periodField.text")); // NOI18N
+        periodField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                periodFieldFocusLost(evt);
+            }
+        });
+
+        mosesOutputField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.mosesOutputField.text")); // NOI18N
+
+        connectToggle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/link.png"))); // NOI18N
+        connectToggle.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.connectToggle.toolTipText")); // NOI18N
+        connectToggle.setFocusPainted(false);
+        connectToggle.setFocusable(false);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, 1369, Short.MAX_VALUE)
             .addComponent(jToolBar4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1331, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(periodField, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(connectToggle, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mosesOutputField, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(periodField, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(connectToggle))
+                    .addComponent(mosesOutputField, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jToolBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
+                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)
                     .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
@@ -385,7 +419,7 @@ public final class PanelsTopComponent extends TopComponent {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(chooseButton)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(outDirectoryField, javax.swing.GroupLayout.DEFAULT_SIZE, 1349, Short.MAX_VALUE))
+                    .addComponent(outDirectoryField, javax.swing.GroupLayout.DEFAULT_SIZE, 1342, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -408,7 +442,7 @@ public final class PanelsTopComponent extends TopComponent {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1374, Short.MAX_VALUE)
+            .addGap(0, 1367, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(codePanel))
         );
@@ -574,12 +608,18 @@ public final class PanelsTopComponent extends TopComponent {
         mc.setOutputDirectory(mosesDirectory);
     }//GEN-LAST:event_chooseButtonMouseClicked
 
+    private void periodFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_periodFieldFocusLost
+        // TODO add your handling code here:
+        mosesPeriod = Integer.parseInt(periodField.getText());
+    }//GEN-LAST:event_periodFieldFocusLost
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton centerOnNode;
     private javax.swing.JButton chooseButton;
     private javax.swing.JEditorPane codePane;
     private javax.swing.JTabbedPane codePanel;
     private javax.swing.JButton commitButton;
+    private javax.swing.JToggleButton connectToggle;
     private javax.swing.JToggleButton contSaveToggle;
     private javax.swing.JButton dependentsButton;
     private javax.swing.JButton diffButton;
@@ -597,10 +637,12 @@ public final class PanelsTopComponent extends TopComponent {
     private javax.swing.JToolBar jToolBar4;
     private javax.swing.JTextField modelGroupField;
     private javax.swing.JTextField modelNameField;
+    private javax.swing.JTextField mosesOutputField;
     private javax.swing.JList<NodeListWrapper> neighborNodesList;
     private javax.swing.JButton openButton;
     private javax.swing.JTextField outDirectoryField;
     private javax.swing.JButton parentDirButton;
+    private javax.swing.JTextField periodField;
     private javax.swing.JButton precedentsButton;
     private javax.swing.JButton refreshButton;
     private javax.swing.JButton repoBrowseButton;
@@ -851,9 +893,26 @@ public final class PanelsTopComponent extends TopComponent {
    
     public void editNode(Node node){
         nsm.setRootNode(node);
-        System.out.println(mc.getSubModel(mosesModel, node));
-        System.out.println(mc.getColumnName(mosesModel, node));
-        System.out.println(mc.getOutput(mosesModel, node, 50));
+        //System.out.println(mc.getSubModel(mosesModel, node));
+        //System.out.println(mc.getColumnName(mosesModel, node));
+        //=============================================================== REFACTOR
+        if(connectToggle.isSelected()){
+            double outResult = mc.getOutput(mosesModel, node, mosesPeriod);
+            if(outResult<0)
+            {
+                mosesOutputField.setText("No Data");
+            }
+            else if(outResult > 999)
+            {
+                DecimalFormat formatter = new DecimalFormat("#,###.00");
+                mosesOutputField.setText(formatter.format(outResult));
+            }
+            else
+            {
+                mosesOutputField.setText(String.format("%.6f",outResult));
+            }
+        }
+        //=======================================================================
         ArrayList<NodeListWrapper> neighborsList = new ArrayList<NodeListWrapper>();
         ArrayList<Integer> displayStyle = new ArrayList<Integer>();
         for(Node nnode : nsm.getNeighbors()){
