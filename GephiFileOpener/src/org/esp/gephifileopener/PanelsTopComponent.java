@@ -63,6 +63,7 @@ public final class PanelsTopComponent extends TopComponent {
     private final MosesController mc = new MosesController("");
     private final NodeSelectionManager nsm = new NodeSelectionManager();
     private ComboBoxRenderer renderer;
+    String mosesDirectory = null, mosesModel = null, mosesGroup = null;
     
     public PanelsTopComponent() {
         initComponents();
@@ -79,6 +80,20 @@ public final class PanelsTopComponent extends TopComponent {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        codePanel = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jToolBar3 = new javax.swing.JToolBar();
+        saveButton = new javax.swing.JButton();
+        contSaveToggle = new javax.swing.JToggleButton();
+        parentDirButton = new javax.swing.JButton();
+        openButton = new javax.swing.JButton();
+        jSeparator4 = new javax.swing.JToolBar.Separator();
+        precedentsButton = new javax.swing.JButton();
+        resetButton = new javax.swing.JButton();
+        dependentsButton = new javax.swing.JButton();
+        jToolBar4 = new javax.swing.JToolBar();
+        refreshButton = new javax.swing.JButton();
+        filenameField = new javax.swing.JTextField();
         jToolBar2 = new javax.swing.JToolBar();
         centerOnNode = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JToolBar.Separator();
@@ -94,22 +109,110 @@ public final class PanelsTopComponent extends TopComponent {
         codePane = new javax.swing.JEditorPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         neighborNodesList = new javax.swing.JList<NodeListWrapper>();
-        jToolBar3 = new javax.swing.JToolBar();
-        saveButton = new javax.swing.JButton();
-        contSaveToggle = new javax.swing.JToggleButton();
-        parentDirButton = new javax.swing.JButton();
-        openButton = new javax.swing.JButton();
-        jSeparator4 = new javax.swing.JToolBar.Separator();
-        precedentsButton = new javax.swing.JButton();
-        resetButton = new javax.swing.JButton();
-        dependentsButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jToolBar4 = new javax.swing.JToolBar();
-        refreshButton = new javax.swing.JButton();
-        filenameField = new javax.swing.JTextField();
+        jPanel2 = new javax.swing.JPanel();
+        chooseButton = new javax.swing.JButton();
+        modelNameField = new javax.swing.JTextField();
+        modelGroupField = new javax.swing.JTextField();
+        outDirectoryField = new javax.swing.JTextField();
 
         setIcon(ImageUtilities.loadImage(ICON_PATH, true));
         setName("codePanel"); // NOI18N
+
+        codePanel.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
+
+        jToolBar3.setFloatable(false);
+        jToolBar3.setRollover(true);
+
+        saveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/saveProject.png"))); // NOI18N
+        saveButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.saveButton.toolTipText")); // NOI18N
+        saveButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                saveButtonMouseClicked(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                saveButtonMouseExited(evt);
+            }
+        });
+        jToolBar3.add(saveButton);
+
+        contSaveToggle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/film_save.png"))); // NOI18N
+        contSaveToggle.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.contSaveToggle.toolTipText")); // NOI18N
+        contSaveToggle.setFocusable(false);
+        contSaveToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        contSaveToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar3.add(contSaveToggle);
+
+        parentDirButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/folder.png"))); // NOI18N
+        parentDirButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.parentDirButton.toolTipText")); // NOI18N
+        parentDirButton.setFocusable(false);
+        parentDirButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        parentDirButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        parentDirButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                parentDirButtonMouseClicked(evt);
+            }
+        });
+        jToolBar3.add(parentDirButton);
+
+        openButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/application_get.png"))); // NOI18N
+        openButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.openButton.toolTipText")); // NOI18N
+        openButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                openButtonMouseClicked(evt);
+            }
+        });
+        jToolBar3.add(openButton);
+        jToolBar3.add(jSeparator4);
+
+        precedentsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/control_rewind_blue.png"))); // NOI18N
+        precedentsButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.precedentsButton.toolTipText")); // NOI18N
+        precedentsButton.setFocusable(false);
+        precedentsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        precedentsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        precedentsButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                precedentsButtonMousePressed(evt);
+            }
+        });
+        jToolBar3.add(precedentsButton);
+
+        resetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/control_stop_blue.png"))); // NOI18N
+        resetButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.resetButton.toolTipText")); // NOI18N
+        resetButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        resetButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        resetButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                resetButtonMouseClicked(evt);
+            }
+        });
+        jToolBar3.add(resetButton);
+
+        dependentsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/control_fastforward_blue.png"))); // NOI18N
+        dependentsButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.dependentsButton.toolTipText")); // NOI18N
+        dependentsButton.setFocusable(false);
+        dependentsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        dependentsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        dependentsButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dependentsButtonMouseClicked(evt);
+            }
+        });
+        jToolBar3.add(dependentsButton);
+
+        jToolBar4.setFloatable(false);
+
+        refreshButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/refresh.png"))); // NOI18N
+        refreshButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.refreshButton.toolTipText")); // NOI18N
+        refreshButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                refreshButtonMouseClicked(evt);
+            }
+        });
+        jToolBar4.add(refreshButton);
+
+        filenameField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.filenameField.text")); // NOI18N
+        filenameField.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.filenameField.toolTipText")); // NOI18N
+        jToolBar4.add(filenameField);
 
         jToolBar2.setFloatable(false);
         jToolBar2.setOrientation(javax.swing.SwingConstants.VERTICAL);
@@ -232,140 +335,91 @@ public final class PanelsTopComponent extends TopComponent {
 
         jSplitPane1.setRightComponent(jScrollPane2);
 
-        jToolBar3.setFloatable(false);
-        jToolBar3.setRollover(true);
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, 1369, Short.MAX_VALUE)
+            .addComponent(jToolBar4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jToolBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
+                    .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        );
 
-        saveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/saveProject.png"))); // NOI18N
-        saveButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.saveButton.toolTipText")); // NOI18N
-        saveButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        codePanel.addTab(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.jPanel1.TabConstraints.tabTitle"), jPanel1); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(chooseButton, org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.chooseButton.text")); // NOI18N
+        chooseButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                saveButtonMouseClicked(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                saveButtonMouseExited(evt);
+                chooseButtonMouseClicked(evt);
             }
         });
-        jToolBar3.add(saveButton);
 
-        contSaveToggle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/film_save.png"))); // NOI18N
-        contSaveToggle.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.contSaveToggle.toolTipText")); // NOI18N
-        contSaveToggle.setFocusable(false);
-        contSaveToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        contSaveToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar3.add(contSaveToggle);
+        modelNameField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.modelNameField.text")); // NOI18N
 
-        parentDirButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/folder.png"))); // NOI18N
-        parentDirButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.parentDirButton.toolTipText")); // NOI18N
-        parentDirButton.setFocusable(false);
-        parentDirButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        parentDirButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        parentDirButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                parentDirButtonMouseClicked(evt);
-            }
-        });
-        jToolBar3.add(parentDirButton);
+        modelGroupField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.modelGroupField.text")); // NOI18N
 
-        openButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/application_get.png"))); // NOI18N
-        openButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.openButton.toolTipText")); // NOI18N
-        openButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                openButtonMouseClicked(evt);
-            }
-        });
-        jToolBar3.add(openButton);
-        jToolBar3.add(jSeparator4);
+        outDirectoryField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.outDirectoryField.text")); // NOI18N
 
-        precedentsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/control_rewind_blue.png"))); // NOI18N
-        precedentsButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.precedentsButton.toolTipText")); // NOI18N
-        precedentsButton.setFocusable(false);
-        precedentsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        precedentsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        precedentsButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                precedentsButtonMousePressed(evt);
-            }
-        });
-        jToolBar3.add(precedentsButton);
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(modelGroupField)
+                    .addComponent(modelNameField)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(chooseButton)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(outDirectoryField, javax.swing.GroupLayout.DEFAULT_SIZE, 1349, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(outDirectoryField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(modelNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(modelGroupField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chooseButton)
+                .addContainerGap(181, Short.MAX_VALUE))
+        );
 
-        resetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/control_stop_blue.png"))); // NOI18N
-        resetButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.resetButton.toolTipText")); // NOI18N
-        resetButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        resetButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        resetButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                resetButtonMouseClicked(evt);
-            }
-        });
-        jToolBar3.add(resetButton);
-
-        dependentsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/control_fastforward_blue.png"))); // NOI18N
-        dependentsButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.dependentsButton.toolTipText")); // NOI18N
-        dependentsButton.setFocusable(false);
-        dependentsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        dependentsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        dependentsButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                dependentsButtonMouseClicked(evt);
-            }
-        });
-        jToolBar3.add(dependentsButton);
-
-        org.openide.awt.Mnemonics.setLocalizedText(jButton1, org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.jButton1.text")); // NOI18N
-        jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
-        jToolBar3.add(jButton1);
-
-        jToolBar4.setFloatable(false);
-        jToolBar4.setRollover(true);
-
-        refreshButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/refresh.png"))); // NOI18N
-        refreshButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.refreshButton.toolTipText")); // NOI18N
-        refreshButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                refreshButtonMouseClicked(evt);
-            }
-        });
-        jToolBar4.add(refreshButton);
-
-        filenameField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.filenameField.text")); // NOI18N
-        filenameField.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.filenameField.toolTipText")); // NOI18N
-        jToolBar4.add(filenameField);
+        codePanel.addTab(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.jPanel2.TabConstraints.tabTitle"), jPanel2); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jToolBar4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jToolBar3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1156, Short.MAX_VALUE)))
-                .addGap(6, 6, 6))
+            .addGap(0, 1374, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(codePanel))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jToolBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
-                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(6, 6, 6))
+            .addGap(0, 321, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(codePanel))
         );
+
+        codePanel.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.codePanel.AccessibleContext.accessibleName")); // NOI18N
     }// </editor-fold>//GEN-END:initComponents
 
     private void openButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openButtonMouseClicked
@@ -511,24 +565,27 @@ public final class PanelsTopComponent extends TopComponent {
         requestFocus();
     }//GEN-LAST:event_resetButtonMouseClicked
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+    private void chooseButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_chooseButtonMouseClicked
         // TODO add your handling code here:
-        ArrayList<String> outfiles =  mc.ms_ListModels("C:\\temp\\esp-pension-alm\\output");
-        for(String outfile: outfiles)
-        {
-            System.out.println(outfile);
-        }
-    }//GEN-LAST:event_jButton1MouseClicked
+        System.out.println("You clicked the Directory button...");
+        mosesDirectory = outDirectoryField.getText();
+        mosesModel = modelNameField.getText();
+        mosesGroup = modelGroupField.getText();
+        mc.setOutputDirectory(mosesDirectory);
+    }//GEN-LAST:event_chooseButtonMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton centerOnNode;
+    private javax.swing.JButton chooseButton;
     private javax.swing.JEditorPane codePane;
+    private javax.swing.JTabbedPane codePanel;
     private javax.swing.JButton commitButton;
     private javax.swing.JToggleButton contSaveToggle;
     private javax.swing.JButton dependentsButton;
     private javax.swing.JButton diffButton;
     private javax.swing.JTextField filenameField;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
@@ -538,8 +595,11 @@ public final class PanelsTopComponent extends TopComponent {
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JToolBar jToolBar3;
     private javax.swing.JToolBar jToolBar4;
+    private javax.swing.JTextField modelGroupField;
+    private javax.swing.JTextField modelNameField;
     private javax.swing.JList<NodeListWrapper> neighborNodesList;
     private javax.swing.JButton openButton;
+    private javax.swing.JTextField outDirectoryField;
     private javax.swing.JButton parentDirButton;
     private javax.swing.JButton precedentsButton;
     private javax.swing.JButton refreshButton;
@@ -791,6 +851,9 @@ public final class PanelsTopComponent extends TopComponent {
    
     public void editNode(Node node){
         nsm.setRootNode(node);
+        System.out.println(mc.getSubModel(mosesModel, node));
+        System.out.println(mc.getColumnName(mosesModel, node));
+        System.out.println(mc.getOutput(mosesModel, node, 50));
         ArrayList<NodeListWrapper> neighborsList = new ArrayList<NodeListWrapper>();
         ArrayList<Integer> displayStyle = new ArrayList<Integer>();
         for(Node nnode : nsm.getNeighbors()){
@@ -827,6 +890,7 @@ public final class PanelsTopComponent extends TopComponent {
             }
         }
     }
+    
     private String tsvnLog(String filename){
         return "TortoiseProc /command:log /path:\"" + filename +"\"";
     }

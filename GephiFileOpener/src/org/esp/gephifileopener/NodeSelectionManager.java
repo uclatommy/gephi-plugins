@@ -23,7 +23,7 @@ public class NodeSelectionManager{
     private final SelectionManager sm = VizController.getInstance().getSelectionManager();
     private final ArrayList<Edge> currentSelection = new ArrayList<Edge>();
     private Node currentRootNode;
-    private final DirectedGraph dgraph = Lookup.getDefault().lookup(GraphController.class).getModel().getDirectedGraphVisible();
+    private final DirectedGraph dgraph = Lookup.getDefault().lookup(GraphController.class).getModel().getDirectedGraph();
     
     public void setRootNode(Node node)
     {

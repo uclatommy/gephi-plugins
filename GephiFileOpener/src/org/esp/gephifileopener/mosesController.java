@@ -14,10 +14,10 @@ import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
 import org.gephi.data.attributes.api.AttributeRow;
 import org.gephi.graph.api.Node;
 import org.openide.util.Exceptions;
@@ -30,6 +30,7 @@ public class MosesController {
     private String modelDirectory;
     private String outputDirectory;
     private String outputFile;
+    private List<List<String>> outputLookup = new ArrayList<List<String>>();
     final private String stels_driver = "jstels.jdbc.dbf.DBFDriver2";
     
     public MosesController(String model_directory)
@@ -62,6 +63,156 @@ public class MosesController {
             } else if (listOfFile.isDirectory()) {
                 System.out.println("Directory " + listOfFile.getName());
             }
+        }
+        return result;
+    }
+    
+    public ArrayList<String> ms_ListGroups(String PathNameBase, String Model)
+    {
+        ArrayList<String> result = new ArrayList<String>();
+        try {
+            Class.forName(stels_driver);
+            Connection conn = DriverManager.getConnection("jdbc:jstels:dbf:"+PathNameBase);
+            Statement stmt = conn.createStatement();
+            //System.out.println("SELECT name, product, purpose FROM \"" + Model + "$INFO.DBF\" WHERE RECTYPE = 3");
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT name, product, purpose FROM \"" + Model + "$INFO.DBF\" WHERE RECTYPE = 3"
+            );
+            while (rs.next())
+            {
+                result.add(rs.getString("name"));
+            }
+            return result;
+        } catch (Exception ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return null;
+    }
+    
+    public double ms_CashFlow(String PathNameBase, String Model, String Group, String Column, int Period)
+    {
+        try{
+            Class.forName(stels_driver);
+            Connection conn = DriverManager.getConnection("jdbc:jstels:dbf:"+PathNameBase);
+            Statement stmt = conn.createStatement();
+            System.out.println("SELECT "+ Column +" FROM \"" + Model + ".DBF\" WHERE period = " + Period);
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT "+ Column +" FROM \"" + Model + ".DBF\" WHERE period = " + Period
+            );
+            while(rs.next())
+            {
+                System.out.println(rs.getString(Column));
+            }
+            rs.first();
+            return rs.getDouble(Column);
+        } catch (Exception ex){
+            Exceptions.printStackTrace(ex);
+        }
+        return 0.0;
+    }
+    
+    public String getSubModel(String model, Node node)
+    {
+        String prod = (String)node.getNodeData().getAttributes().getValue("prod");
+        String purp = (String)node.getNodeData().getAttributes().getValue("purp");
+        String groupMemo = "";
+        try{
+            Class.forName(stels_driver);
+            Connection conn = DriverManager.getConnection("jdbc:jstels:dbf:"+outputDirectory);
+            Statement stmt = conn.createStatement();
+            //System.out.println("SELECT name FROM \"" + model + "$INFO.DBF\" WHERE product = '" + prod + "' AND purpose = '" + purp + "' AND rectype = 3");
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT name FROM \"" + model + "$INFO.DBF\" WHERE product = '" + prod + "' AND purpose = '" + purp + "' AND rectype = 3"
+            );
+            /*
+            while(rs.next())
+            {
+                System.out.println(rs.getString("memo2"));
+            }
+            */
+            rs.first();
+            groupMemo = rs.getString("name");
+            //System.out.println(groupMemo);
+        } catch (Exception ex){
+            Exceptions.printStackTrace(ex);
+        }
+        if(!groupMemo.equals(""))
+        {
+            String[] memosplit = groupMemo.split(",");
+            //System.out.println(memosplit[0]);
+            String result = memosplit[0].replaceAll("\"", "");
+            result = result.replaceAll("\\|", "~");
+            //System.out.println(result);
+            return "~" + result;
+        }
+        return "";
+    }
+    
+    public String getColumnName(String model, Node node)
+    {
+        String prod = (String)node.getNodeData().getAttributes().getValue("prod");
+        String purp = (String)node.getNodeData().getAttributes().getValue("purp");
+        String colName = node.getNodeData().getLabel();
+        String colMemo = "";
+        try{
+            Class.forName(stels_driver);
+            Connection conn = DriverManager.getConnection("jdbc:jstels:dbf:"+outputDirectory);
+            Statement stmt = conn.createStatement();
+            //System.out.println("SELECT name FROM \"" + model + "$INFO.DBF\" WHERE product = '" + prod + "' AND purpose = '" + purp + "' AND rectype = 3");
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT memo1 FROM \"" + model + "$INFO.DBF\" WHERE product = '" + prod + "' AND purpose = '" + purp + "' AND rectype = 2"
+            );
+            /*
+            while(rs.next())
+            {
+                System.out.println(rs.getString("memo2"));
+            }
+            */
+            rs.first();
+            colMemo = rs.getString("memo1");
+            //System.out.println(colMemo);
+        } catch (Exception ex){
+            Exceptions.printStackTrace(ex);
+        }
+        if(!colMemo.equals(""))
+        {
+            String result = "";
+            String[] records = colMemo.split("\\r?\\n");
+            outerloop:
+            for(String r: records)
+            {
+                String[] fields = r.split(",");
+                if(fields[0].equals("\""+colName+"\""))
+                {
+                    result = fields[1].replaceAll("\"","");
+                    break outerloop;
+                }
+            }
+            //System.out.println(result);
+            return result;
+        }
+        return "";
+    }
+    
+    public double getOutput(String model, Node node, int period)
+    {
+        String tableName = model + getSubModel(model, node);
+        String columnName = getColumnName(model, node);
+        if(columnName.equals("")) return -1.0;
+        double result = -1.0;
+        try{
+            Class.forName(stels_driver);
+            Connection conn = DriverManager.getConnection("jdbc:jstels:dbf:"+outputDirectory);
+            Statement stmt = conn.createStatement();
+            //System.out.println("SELECT name FROM \"" + model + "$INFO.DBF\" WHERE product = '" + prod + "' AND purpose = '" + purp + "' AND rectype = 3");
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT "+columnName+" FROM \"" + tableName + ".DBF\" WHERE period = " + period
+            );
+            rs.first();
+            result = rs.getDouble(columnName);
+            //System.out.println(colMemo);
+        } catch (Exception ex){
+            Exceptions.printStackTrace(ex);
         }
         return result;
     }
