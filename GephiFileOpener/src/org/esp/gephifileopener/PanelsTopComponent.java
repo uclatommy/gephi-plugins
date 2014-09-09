@@ -116,8 +116,8 @@ public final class PanelsTopComponent extends TopComponent {
         jPanel2 = new javax.swing.JPanel();
         chooseButton = new javax.swing.JButton();
         modelNameField = new javax.swing.JTextField();
-        modelGroupField = new javax.swing.JTextField();
         outDirectoryField = new javax.swing.JTextField();
+        statusLabel = new javax.swing.JLabel();
 
         setIcon(ImageUtilities.loadImage(ICON_PATH, true));
         setName("codePanel"); // NOI18N
@@ -371,9 +371,9 @@ public final class PanelsTopComponent extends TopComponent {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(periodField, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(mosesOutputField, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(periodField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(mosesOutputField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jToolBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -393,8 +393,6 @@ public final class PanelsTopComponent extends TopComponent {
 
         modelNameField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.modelNameField.text")); // NOI18N
 
-        modelGroupField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.modelGroupField.text")); // NOI18N
-
         outDirectoryField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.outDirectoryField.text")); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -404,10 +402,11 @@ public final class PanelsTopComponent extends TopComponent {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(modelGroupField)
                     .addComponent(modelNameField)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(chooseButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(statusLabel)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(outDirectoryField, javax.swing.GroupLayout.DEFAULT_SIZE, 1342, Short.MAX_VALUE))
                 .addContainerGap())
@@ -420,10 +419,10 @@ public final class PanelsTopComponent extends TopComponent {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(modelNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(modelGroupField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(chooseButton)
-                .addContainerGap(181, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(chooseButton)
+                    .addComponent(statusLabel))
+                .addContainerGap(207, Short.MAX_VALUE))
         );
 
         codePanel.addTab(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.jPanel2.TabConstraints.tabTitle"), jPanel2); // NOI18N
@@ -594,8 +593,15 @@ public final class PanelsTopComponent extends TopComponent {
         System.out.println("You clicked the Directory button...");
         mosesDirectory = outDirectoryField.getText();
         mosesModel = modelNameField.getText();
-        mosesGroup = modelGroupField.getText();
         mc.setOutputDirectory(mosesDirectory);
+        if(mc.mosesOutputReady())
+        {
+            statusLabel.setText("Ready!");
+        }
+        else
+        {
+            statusLabel.setText("Error! Please check output path.");
+        }
     }//GEN-LAST:event_chooseButtonMouseClicked
 
     private void periodFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_periodFieldFocusLost
@@ -624,7 +630,6 @@ public final class PanelsTopComponent extends TopComponent {
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JToolBar jToolBar3;
     private javax.swing.JToolBar jToolBar4;
-    private javax.swing.JTextField modelGroupField;
     private javax.swing.JTextField modelNameField;
     private javax.swing.JTextField mosesOutputField;
     private javax.swing.JList<NodeListWrapper> neighborNodesList;
@@ -639,6 +644,7 @@ public final class PanelsTopComponent extends TopComponent {
     private javax.swing.JButton resetButton;
     private javax.swing.JButton revertButton;
     private javax.swing.JButton saveButton;
+    private javax.swing.JLabel statusLabel;
     private javax.swing.JButton updateButton;
     // End of variables declaration//GEN-END:variables
     @Override
@@ -882,8 +888,6 @@ public final class PanelsTopComponent extends TopComponent {
    
     public void editNode(Node node){
         nsm.setRootNode(node);
-        System.out.println(mc.getSubModel(mosesModel, node));
-        System.out.println(mc.getColumnName(mosesModel, node));
         //=============================================================== REFACTOR
         double outResult = mc.getOutput(mosesModel, node, mosesPeriod);
         if(outResult<0)

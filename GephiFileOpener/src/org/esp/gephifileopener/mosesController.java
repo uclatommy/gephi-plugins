@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +30,108 @@ import org.openide.util.Exceptions;
 public class MosesController {
     private String modelDirectory;
     private String outputDirectory;
-    private String outputFile;
-    private List<List<String>> outputLookup = new ArrayList<List<String>>();
-    final private String driver = "sun.jdbc.odbc.JdbcOdbcDriver";
+    private final List<List<String>> outputLookup = new ArrayList<List<String>>();
+    class foxproDB{
+        private String location;
+        private String connString;
+        private Connection conn;
+        private Statement stmt;
+        private Boolean open = false;
+        
+        private foxproDB(String loc)
+        {
+            setLocation(loc);
+            openDB();
+        }
+        
+        boolean isOpen()
+        {
+            return open;
+        }
+        
+        void openDB()
+        {
+            try{
+                Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+                connString =    "jdbc:odbc:Driver={Microsoft Visual FoxPro Driver};SourceType=DBF;SourceDB="+location+";\n" +
+                                "Exclusive=No;Collate=Machine;NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";
+                conn = DriverManager.getConnection(connString);
+                stmt = conn.createStatement();
+                open = true;
+            }
+            catch (Exception ex) 
+            {
+                open = false;
+                Exceptions.printStackTrace(ex);
+            }
+        }
+        
+        void setLocation(String loc)
+        {
+            location = loc;
+        }
+        
+        void closeDB()
+        {
+            try{
+                conn.close();
+                stmt.close();
+                open = false;
+            }
+            catch (Exception ex)
+            {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+        
+        ResultSet executeQuery(String query)
+        {
+            if(!open)
+            {
+                openDB();
+            }
+            
+            ResultSet rs;
+            try{
+                rs = stmt.executeQuery(query);
+            }
+            catch (Exception ex)
+            {
+                Exceptions.printStackTrace(ex);
+                rs = null;
+            }
+            return rs;
+        }
+        
+        int executeUpdate(String query)
+        {
+            if(!open)
+            {
+                openDB();
+            }
+            
+            int rs;
+            try{
+                rs = stmt.executeUpdate(query);
+            }
+            catch (Exception ex)
+            {
+                Exceptions.printStackTrace(ex);
+                rs = 0;
+            }
+            return rs;
+        }
+    }
+    foxproDB mosesOutput;
     
     public MosesController(String model_directory)
     {
         modelDirectory = model_directory;
+    }
+    
+    public boolean mosesOutputReady()
+    {
+        return mosesOutput.isOpen();
     }
     
     public void setModelDirectory(String model_directory)
@@ -46,11 +142,7 @@ public class MosesController {
     public void setOutputDirectory(String output)
     {
         outputDirectory = output;
-    }
-    
-    private String getConnString(){
-        return "jdbc:odbc:Driver={Microsoft Visual FoxPro Driver};SourceType=DBF;SourceDB="+outputDirectory+";\n" +
-            "Exclusive=No;Collate=Machine;NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";
+        mosesOutput = new foxproDB(outputDirectory);
     }
     
     public ArrayList<String> ms_ListModels(String PathNameBase)
@@ -75,43 +167,30 @@ public class MosesController {
     public ArrayList<String> ms_ListGroups(String PathNameBase, String Model)
     {
         ArrayList<String> result = new ArrayList<String>();
-        try {
-            Class.forName(driver);
-            String connString = getConnString();
-            Connection conn = DriverManager.getConnection(connString);
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(
-                    "SELECT name, product, purpose FROM \"" + Model + "$INFO.DBF\" WHERE RECTYPE = 3"
-            );
+        try{
+            ResultSet rs = mosesOutput.executeQuery("SELECT name, product, purpose FROM \"" + Model + "$INFO.DBF\" WHERE RECTYPE = 3");
             while (rs.next())
             {
                 result.add(rs.getString("name"));
             }
-            stmt.close();
-            conn.close();
-            return result;
-        } catch (Exception ex) {
+            mosesOutput.closeDB();
+        }
+        catch (SQLException ex)
+        {
             Exceptions.printStackTrace(ex);
         }
-        return null;
+        return result;
     }
     
     public double ms_CashFlow(String PathNameBase, String Model, String Group, String Column, int Period)
     {
         try{
-            Class.forName(driver);
-            String connString = getConnString();
-            Connection conn = DriverManager.getConnection(connString);
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(
-                    "SELECT "+ Column +" FROM \"" + Model + ".DBF\" WHERE period = " + Period
-            );
+            ResultSet rs = mosesOutput.executeQuery("SELECT "+ Column +" FROM \"" + Model + ".DBF\" WHERE period = " + Period            );
             rs.next();
             double result = rs.getDouble(Column);
-            stmt.close();
-            conn.close();
+            mosesOutput.closeDB();
             return result;
-        } catch (Exception ex){
+        } catch (SQLException ex){
             Exceptions.printStackTrace(ex);
         }
         return 0.0;
@@ -123,27 +202,21 @@ public class MosesController {
         String purp = (String)node.getNodeData().getAttributes().getValue("purp");
         String groupMemo = "";
         try{
-            Class.forName(driver);
-            String connString = getConnString();
-            Connection conn = DriverManager.getConnection(connString);
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(
-                    "SELECT name FROM \"" + model + "$INFO.DBF\" WHERE product = '" + prod + "' AND purpose = '" + purp + "' AND rectype = 3"
+            ResultSet rs = mosesOutput.executeQuery(
+                    "SELECT name FROM \"" + model + "$INFO.DBF\" WHERE product = '" + 
+                    prod + "' AND purpose = '" + purp + "' AND rectype = 3"
             );
             rs.next();
             groupMemo = rs.getString("name");
-            stmt.close();
-            conn.close();
-        } catch (Exception ex){
+            mosesOutput.closeDB();
+        } catch (SQLException ex){
             Exceptions.printStackTrace(ex);
         }
         if(!groupMemo.equals(""))
         {
             String[] memosplit = groupMemo.split(",");
-            //System.out.println(memosplit[0]);
             String result = memosplit[0].replaceAll("\"", "");
             result = result.replaceAll("\\|", "~");
-            //System.out.println(result);
             return "~" + result;
         }
         return "";
@@ -156,33 +229,15 @@ public class MosesController {
         String colName = node.getNodeData().getLabel();
         String colMemo = "";
         try{
-            //Class.forName(stels_driver);
-            Class.forName(driver);
-            //Connection conn = DriverManager.getConnection("jdbc:jstels:dbf:"+outputDirectory);
-            //String connString="jdbc:odbc:Driver={Microsoft Visual FoxPro Driver};SourceType=DBF;SourceDB="+outputDirectory+";\n" +
-            //    "Exclusive=No;Collate=Machine;NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";//DeafultDir indicates the location of the db
-            //String connString="jdbc:odbc:dbf;DataDirectory="+outputDirectory+";";
-            String connString = getConnString();
-            Connection conn=DriverManager.getConnection(connString);
-            Statement stmt = conn.createStatement();
-            //System.out.println("SELECT name FROM \"" + model + "$INFO.DBF\" WHERE product = '" + prod + "' AND purpose = '" + purp + "' AND rectype = 3");
-            ResultSet rs = stmt.executeQuery(
-                    "SELECT memo1 FROM \"" + model + "$INFO.DBF\" WHERE product = '" + prod + "' AND purpose = '" + purp + "' AND rectype = 2"
-        //            "SELECT * FROM \"GPF_FY13_ID14_0_TESTTC~MAIN\""
+            ResultSet rs = mosesOutput.executeQuery(
+                    "SELECT memo1 FROM \"" + model + "$INFO.DBF\" WHERE product = '" + 
+                    prod + "' AND purpose = '" + purp + "' AND rectype = 2"
             );
-            /*
-            while(rs.next())
-            {
-                System.out.println(rs.getString("memo2"));
-            }
-            */
             rs.next();
             colMemo = rs.getString("memo1");
-            stmt.close();
-            conn.close();
-            //colMemo = rs.getString("group");
+            mosesOutput.closeDB();
             System.out.println(colMemo);
-        } catch (Exception ex){
+        } catch (SQLException ex){
             Exceptions.printStackTrace(ex);
         }
         if(!colMemo.equals(""))
@@ -196,10 +251,9 @@ public class MosesController {
                 if(fields[0].equals("\""+colName+"\""))
                 {
                     result = fields[1].replaceAll("\"","");
-                    break outerloop;
+                    break;
                 }
             }
-            //System.out.println(result);
             return result;
         }
         return "";
@@ -212,17 +266,12 @@ public class MosesController {
         if(columnName.equals("")) return -1.0;
         double result = -1.0;
         try{
-            Class.forName(driver);
-            String connString = getConnString();            
-            Connection conn = DriverManager.getConnection(connString);
-            Statement stmt = conn.createStatement();
             String qryString = "SELECT * FROM \"" + tableName.trim() + ".DBF\" WHERE period = '" + period + "'";
-            ResultSet rs = stmt.executeQuery(qryString);
+            ResultSet rs = mosesOutput.executeQuery(qryString);
             rs.next();
             result = rs.getDouble(columnName);
-            stmt.close();
-            conn.close();
-        } catch (Exception ex){
+            mosesOutput.closeDB();
+        } catch (SQLException ex){
             Exceptions.printStackTrace(ex);
         }
         return result;
@@ -230,15 +279,11 @@ public class MosesController {
     
     public void updateFML(Node node, String content)
     {
+        AttributeRow row = (AttributeRow) node.getNodeData().getAttributes();
+        String fmlid = row.getValue("Id").toString();
+        String prod = row.getValue("prod").toString();
+        String purp = row.getValue("purp").toString();
         try {
-            AttributeRow row = (AttributeRow) node.getNodeData().getAttributes();
-            String fmlid = row.getValue("Id").toString();
-            String prod = row.getValue("prod").toString();
-            String purp = row.getValue("purp").toString();
-            Class.forName(driver);
-            String connString = getConnString();
-            Connection conn = DriverManager.getConnection(connString);
-            Statement stmt = conn.createStatement();
             /* Don't know why it wont find chgd.dbf even though it's there!
             ResultSet rs = stmt.executeQuery(
                 "SELECT * FROM \"CHGD.DBF\""
@@ -260,14 +305,13 @@ public class MosesController {
                 "UPDATE \"CHGD.DBF\" SET flag = .T. WHERE product = \'"+prod+"\' AND purpose = \'"+purp+"\'"
             );
             */
-            stmt.executeUpdate(
+            mosesOutput.executeUpdate(
                 "UPDATE \"FML.DBF\" set formula = \'" + content +"\' WHERE fmlid = " + fmlid
             );
-            
-            //rs.close();
-            stmt.close();
-            conn.close();
-        } catch (Exception ex) {
+            mosesOutput.closeDB();
+        } 
+        catch (Exception ex) 
+        {
             Exceptions.printStackTrace(ex);
         }
     }
