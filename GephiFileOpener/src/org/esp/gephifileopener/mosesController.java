@@ -31,7 +31,7 @@ public class MosesController {
     private String outputDirectory;
     private String outputFile;
     private List<List<String>> outputLookup = new ArrayList<List<String>>();
-    final private String stels_driver = "jstels.jdbc.dbf.DBFDriver2";
+    final private String driver = "sun.jdbc.odbc.JdbcOdbcDriver";
     
     public MosesController(String model_directory)
     {
@@ -46,6 +46,11 @@ public class MosesController {
     public void setOutputDirectory(String output)
     {
         outputDirectory = output;
+    }
+    
+    private String getConnString(){
+        return "jdbc:odbc:Driver={Microsoft Visual FoxPro Driver};SourceType=DBF;SourceDB="+outputDirectory+";\n" +
+            "Exclusive=No;Collate=Machine;NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";
     }
     
     public ArrayList<String> ms_ListModels(String PathNameBase)
@@ -71,10 +76,10 @@ public class MosesController {
     {
         ArrayList<String> result = new ArrayList<String>();
         try {
-            Class.forName(stels_driver);
-            Connection conn = DriverManager.getConnection("jdbc:jstels:dbf:"+PathNameBase);
+            Class.forName(driver);
+            String connString = getConnString();
+            Connection conn = DriverManager.getConnection(connString);
             Statement stmt = conn.createStatement();
-            //System.out.println("SELECT name, product, purpose FROM \"" + Model + "$INFO.DBF\" WHERE RECTYPE = 3");
             ResultSet rs = stmt.executeQuery(
                     "SELECT name, product, purpose FROM \"" + Model + "$INFO.DBF\" WHERE RECTYPE = 3"
             );
@@ -82,6 +87,8 @@ public class MosesController {
             {
                 result.add(rs.getString("name"));
             }
+            stmt.close();
+            conn.close();
             return result;
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
@@ -92,19 +99,18 @@ public class MosesController {
     public double ms_CashFlow(String PathNameBase, String Model, String Group, String Column, int Period)
     {
         try{
-            Class.forName(stels_driver);
-            Connection conn = DriverManager.getConnection("jdbc:jstels:dbf:"+PathNameBase);
+            Class.forName(driver);
+            String connString = getConnString();
+            Connection conn = DriverManager.getConnection(connString);
             Statement stmt = conn.createStatement();
-            System.out.println("SELECT "+ Column +" FROM \"" + Model + ".DBF\" WHERE period = " + Period);
             ResultSet rs = stmt.executeQuery(
                     "SELECT "+ Column +" FROM \"" + Model + ".DBF\" WHERE period = " + Period
             );
-            while(rs.next())
-            {
-                System.out.println(rs.getString(Column));
-            }
-            rs.first();
-            return rs.getDouble(Column);
+            rs.next();
+            double result = rs.getDouble(Column);
+            stmt.close();
+            conn.close();
+            return result;
         } catch (Exception ex){
             Exceptions.printStackTrace(ex);
         }
@@ -117,22 +123,17 @@ public class MosesController {
         String purp = (String)node.getNodeData().getAttributes().getValue("purp");
         String groupMemo = "";
         try{
-            Class.forName(stels_driver);
-            Connection conn = DriverManager.getConnection("jdbc:jstels:dbf:"+outputDirectory);
+            Class.forName(driver);
+            String connString = getConnString();
+            Connection conn = DriverManager.getConnection(connString);
             Statement stmt = conn.createStatement();
-            //System.out.println("SELECT name FROM \"" + model + "$INFO.DBF\" WHERE product = '" + prod + "' AND purpose = '" + purp + "' AND rectype = 3");
             ResultSet rs = stmt.executeQuery(
                     "SELECT name FROM \"" + model + "$INFO.DBF\" WHERE product = '" + prod + "' AND purpose = '" + purp + "' AND rectype = 3"
             );
-            /*
-            while(rs.next())
-            {
-                System.out.println(rs.getString("memo2"));
-            }
-            */
-            rs.first();
+            rs.next();
             groupMemo = rs.getString("name");
-            //System.out.println(groupMemo);
+            stmt.close();
+            conn.close();
         } catch (Exception ex){
             Exceptions.printStackTrace(ex);
         }
@@ -155,12 +156,19 @@ public class MosesController {
         String colName = node.getNodeData().getLabel();
         String colMemo = "";
         try{
-            Class.forName(stels_driver);
-            Connection conn = DriverManager.getConnection("jdbc:jstels:dbf:"+outputDirectory);
+            //Class.forName(stels_driver);
+            Class.forName(driver);
+            //Connection conn = DriverManager.getConnection("jdbc:jstels:dbf:"+outputDirectory);
+            //String connString="jdbc:odbc:Driver={Microsoft Visual FoxPro Driver};SourceType=DBF;SourceDB="+outputDirectory+";\n" +
+            //    "Exclusive=No;Collate=Machine;NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";//DeafultDir indicates the location of the db
+            //String connString="jdbc:odbc:dbf;DataDirectory="+outputDirectory+";";
+            String connString = getConnString();
+            Connection conn=DriverManager.getConnection(connString);
             Statement stmt = conn.createStatement();
             //System.out.println("SELECT name FROM \"" + model + "$INFO.DBF\" WHERE product = '" + prod + "' AND purpose = '" + purp + "' AND rectype = 3");
             ResultSet rs = stmt.executeQuery(
                     "SELECT memo1 FROM \"" + model + "$INFO.DBF\" WHERE product = '" + prod + "' AND purpose = '" + purp + "' AND rectype = 2"
+        //            "SELECT * FROM \"GPF_FY13_ID14_0_TESTTC~MAIN\""
             );
             /*
             while(rs.next())
@@ -168,9 +176,12 @@ public class MosesController {
                 System.out.println(rs.getString("memo2"));
             }
             */
-            rs.first();
+            rs.next();
             colMemo = rs.getString("memo1");
-            //System.out.println(colMemo);
+            stmt.close();
+            conn.close();
+            //colMemo = rs.getString("group");
+            System.out.println(colMemo);
         } catch (Exception ex){
             Exceptions.printStackTrace(ex);
         }
@@ -201,16 +212,16 @@ public class MosesController {
         if(columnName.equals("")) return -1.0;
         double result = -1.0;
         try{
-            Class.forName(stels_driver);
-            Connection conn = DriverManager.getConnection("jdbc:jstels:dbf:"+outputDirectory);
+            Class.forName(driver);
+            String connString = getConnString();            
+            Connection conn = DriverManager.getConnection(connString);
             Statement stmt = conn.createStatement();
-            //System.out.println("SELECT name FROM \"" + model + "$INFO.DBF\" WHERE product = '" + prod + "' AND purpose = '" + purp + "' AND rectype = 3");
-            ResultSet rs = stmt.executeQuery(
-                    "SELECT "+columnName+" FROM \"" + tableName + ".DBF\" WHERE period = " + period
-            );
-            rs.first();
+            String qryString = "SELECT * FROM \"" + tableName.trim() + ".DBF\" WHERE period = '" + period + "'";
+            ResultSet rs = stmt.executeQuery(qryString);
+            rs.next();
             result = rs.getDouble(columnName);
-            //System.out.println(colMemo);
+            stmt.close();
+            conn.close();
         } catch (Exception ex){
             Exceptions.printStackTrace(ex);
         }
@@ -224,9 +235,9 @@ public class MosesController {
             String fmlid = row.getValue("Id").toString();
             String prod = row.getValue("prod").toString();
             String purp = row.getValue("purp").toString();
-            //System.out.println("modelDirectory is: " +modelDirectory);
-            Class.forName(stels_driver);
-            Connection conn = DriverManager.getConnection("jdbc:jstels:dbf:"+modelDirectory);
+            Class.forName(driver);
+            String connString = getConnString();
+            Connection conn = DriverManager.getConnection(connString);
             Statement stmt = conn.createStatement();
             /* Don't know why it wont find chgd.dbf even though it's there!
             ResultSet rs = stmt.executeQuery(

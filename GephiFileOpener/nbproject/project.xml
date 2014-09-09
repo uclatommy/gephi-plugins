@@ -116,14 +116,6 @@
                 <package>org.esp.gephifileopener</package>
             </public-packages>
             <class-path-extension>
-                <runtime-relative-path>ext/dbfdriver.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/dbfdriver.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/log4j.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/log4j.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
                 <runtime-relative-path>ext/jsyntaxpane-0.9.5-b29.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/jsyntaxpane-0.9.5-b29.jar</binary-origin>
             </class-path-extension>

@@ -18,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.text.DefaultHighlighter;
@@ -114,7 +113,6 @@ public final class PanelsTopComponent extends TopComponent {
         neighborNodesList = new javax.swing.JList<NodeListWrapper>();
         periodField = new javax.swing.JTextField();
         mosesOutputField = new javax.swing.JTextField();
-        connectToggle = new javax.swing.JToggleButton();
         jPanel2 = new javax.swing.JPanel();
         chooseButton = new javax.swing.JButton();
         modelNameField = new javax.swing.JTextField();
@@ -351,11 +349,6 @@ public final class PanelsTopComponent extends TopComponent {
 
         mosesOutputField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.mosesOutputField.text")); // NOI18N
 
-        connectToggle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/link.png"))); // NOI18N
-        connectToggle.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.connectToggle.toolTipText")); // NOI18N
-        connectToggle.setFocusPainted(false);
-        connectToggle.setFocusable(false);
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -370,8 +363,6 @@ public final class PanelsTopComponent extends TopComponent {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(periodField, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(connectToggle, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mosesOutputField, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -382,8 +373,7 @@ public final class PanelsTopComponent extends TopComponent {
                     .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(periodField, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(connectToggle))
-                    .addComponent(mosesOutputField, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(mosesOutputField, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jToolBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -619,7 +609,6 @@ public final class PanelsTopComponent extends TopComponent {
     private javax.swing.JEditorPane codePane;
     private javax.swing.JTabbedPane codePanel;
     private javax.swing.JButton commitButton;
-    private javax.swing.JToggleButton connectToggle;
     private javax.swing.JToggleButton contSaveToggle;
     private javax.swing.JButton dependentsButton;
     private javax.swing.JButton diffButton;
@@ -893,24 +882,22 @@ public final class PanelsTopComponent extends TopComponent {
    
     public void editNode(Node node){
         nsm.setRootNode(node);
-        //System.out.println(mc.getSubModel(mosesModel, node));
-        //System.out.println(mc.getColumnName(mosesModel, node));
+        System.out.println(mc.getSubModel(mosesModel, node));
+        System.out.println(mc.getColumnName(mosesModel, node));
         //=============================================================== REFACTOR
-        if(connectToggle.isSelected()){
-            double outResult = mc.getOutput(mosesModel, node, mosesPeriod);
-            if(outResult<0)
-            {
-                mosesOutputField.setText("No Data");
-            }
-            else if(outResult > 999)
-            {
-                DecimalFormat formatter = new DecimalFormat("#,###.00");
-                mosesOutputField.setText(formatter.format(outResult));
-            }
-            else
-            {
-                mosesOutputField.setText(String.format("%.6f",outResult));
-            }
+        double outResult = mc.getOutput(mosesModel, node, mosesPeriod);
+        if(outResult<0)
+        {
+            mosesOutputField.setText("No Data");
+        }
+        else if(outResult > 999)
+        {
+            DecimalFormat formatter = new DecimalFormat("#,###.00");
+            mosesOutputField.setText(formatter.format(outResult));
+        }
+        else
+        {
+            mosesOutputField.setText(String.format("%.6f",outResult));
         }
         //=======================================================================
         ArrayList<NodeListWrapper> neighborsList = new ArrayList<NodeListWrapper>();

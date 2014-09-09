@@ -75,8 +75,6 @@
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="periodField" min="-2" pref="53" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="connectToggle" min="-2" pref="25" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="mosesOutputField" min="-2" pref="171" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
@@ -89,9 +87,8 @@
                           <Component id="jToolBar3" min="-2" pref="25" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="periodField" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
-                              <Component id="connectToggle" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="mosesOutputField" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="mosesOutputField" alignment="0" min="-2" pref="25" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jToolBar4" min="-2" pref="23" max="-2" attributes="0"/>
@@ -462,18 +459,6 @@
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="org/esp/gephifileopener/Bundle.properties" key="PanelsTopComponent.mosesOutputField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JToggleButton" name="connectToggle">
-              <Properties>
-                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/org/esp/gephifileopener/link.png"/>
-                </Property>
-                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="org/esp/gephifileopener/Bundle.properties" key="PanelsTopComponent.connectToggle.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-                </Property>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
               </Properties>
             </Component>
           </SubComponents>
