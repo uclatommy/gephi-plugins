@@ -192,7 +192,7 @@ public class MosesController {
             {
                 result.add(rs.getString("name"));
             }
-            mosesOutput.closeDB();
+            //mosesOutput.closeDB();
         }
         catch (SQLException ex)
         {
@@ -207,7 +207,7 @@ public class MosesController {
             ResultSet rs = mosesOutput.executeQuery("SELECT "+ Column +" FROM \"" + Model + ".DBF\" WHERE period = " + Period            );
             rs.next();
             double result = rs.getDouble(Column);
-            mosesOutput.closeDB();
+            //mosesOutput.closeDB();
             return result;
         } catch (SQLException ex){
             Exceptions.printStackTrace(ex);
@@ -227,7 +227,7 @@ public class MosesController {
             );
             rs.next();
             groupMemo = rs.getString("name");
-            mosesOutput.closeDB();
+            //mosesOutput.closeDB();
         } catch (SQLException ex){
             Exceptions.printStackTrace(ex);
             return "";
@@ -255,7 +255,7 @@ public class MosesController {
             );
             rs.next();
             colMemo = rs.getString("memo1");
-            mosesOutput.closeDB();
+            //mosesOutput.closeDB();
         } catch (SQLException ex){
             Exceptions.printStackTrace(ex);
         }
@@ -294,7 +294,7 @@ public class MosesController {
                     ResultSet rs = mosesOutput.executeQuery(qryString);
                     rs.next();
                     result = rs.getDouble(columnName);
-                    mosesOutput.closeDB();
+                    //mosesOutput.closeDB();
                 } 
                 catch (SQLException ex)
                 {
@@ -342,7 +342,7 @@ public class MosesController {
             mosesFML.executeUpdate(
                 "UPDATE \"CHGD.DBF\" SET flag = .T. WHERE product = \'"+prod+"\' AND purpose = \'"+purp+"\'"
             );
-            mosesFML.closeDB();
+            //mosesFML.closeDB();
         } 
         catch (Exception ex) 
         {

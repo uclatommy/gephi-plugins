@@ -112,7 +112,7 @@ public final class PanelsTopComponent extends TopComponent {
         jScrollPane2 = new javax.swing.JScrollPane();
         neighborNodesList = new javax.swing.JList<NodeListWrapper>();
         periodField = new javax.swing.JTextField();
-        mosesOutputField = new javax.swing.JTextField();
+        mosesOutputField = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         chooseButton = new javax.swing.JButton();
         modelNameField = new javax.swing.JTextField();
@@ -347,8 +347,6 @@ public final class PanelsTopComponent extends TopComponent {
             }
         });
 
-        mosesOutputField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.mosesOutputField.text")); // NOI18N
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -360,10 +358,10 @@ public final class PanelsTopComponent extends TopComponent {
                 .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1331, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(periodField, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mosesOutputField, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(mosesOutputField)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -373,7 +371,7 @@ public final class PanelsTopComponent extends TopComponent {
                     .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(periodField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(mosesOutputField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(mosesOutputField, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jToolBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -392,8 +390,18 @@ public final class PanelsTopComponent extends TopComponent {
         });
 
         modelNameField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.modelNameField.text")); // NOI18N
+        modelNameField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                modelNameFieldFocusGained(evt);
+            }
+        });
 
         outDirectoryField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.outDirectoryField.text")); // NOI18N
+        outDirectoryField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                outDirectoryFieldFocusGained(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -606,7 +614,18 @@ public final class PanelsTopComponent extends TopComponent {
     private void periodFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_periodFieldFocusLost
         // TODO add your handling code here:
         mosesPeriod = Integer.parseInt(periodField.getText());
+        updateMosesOutput(nsm.getRootNode());
     }//GEN-LAST:event_periodFieldFocusLost
+
+    private void outDirectoryFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_outDirectoryFieldFocusGained
+        // TODO add your handling code here:
+        outDirectoryField.selectAll();
+    }//GEN-LAST:event_outDirectoryFieldFocusGained
+
+    private void modelNameFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_modelNameFieldFocusGained
+        // TODO add your handling code here:
+        modelNameField.selectAll();
+    }//GEN-LAST:event_modelNameFieldFocusGained
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton centerOnNode;
@@ -630,7 +649,7 @@ public final class PanelsTopComponent extends TopComponent {
     private javax.swing.JToolBar jToolBar3;
     private javax.swing.JToolBar jToolBar4;
     private javax.swing.JTextField modelNameField;
-    private javax.swing.JTextField mosesOutputField;
+    private javax.swing.JLabel mosesOutputField;
     private javax.swing.JList<NodeListWrapper> neighborNodesList;
     private javax.swing.JButton openButton;
     private javax.swing.JTextField outDirectoryField;
@@ -771,8 +790,6 @@ public final class PanelsTopComponent extends TopComponent {
         if(mc==null)
         {
             mc = new MosesController();
-            
-            mc.setModelDirectory(Paths.get(filename).getParent().getParent().getParent().toString());
         }
         if(!mc.mosesFMLReady())
         {
@@ -823,6 +840,13 @@ public final class PanelsTopComponent extends TopComponent {
             AttributeRow row = (AttributeRow) nsm.getRootNode().getNodeData().getAttributes();
             String saveText = codePane.getText();
             
+            if(mc!=null)
+            {
+                if(!mc.mosesFMLReady())
+                {
+                    mc.setModelDirectory(Paths.get(fileToSave).getParent().getParent().getParent().toString());
+                }
+            }
             if(mc.mosesFMLReady())
             {
                 mc.updateFML(nsm.getRootNode(),codePane.getText());
@@ -901,6 +925,35 @@ public final class PanelsTopComponent extends TopComponent {
         nsm.setPairwiseSelection(node);
     }
    
+    public void updateMosesOutput(final Node cur)
+    {
+        if(mc!=null && mc.mosesOutputReady())
+        {
+            //=============================================================== REFACTOR
+            SwingUtilities.invokeLater(new Runnable() 
+            {
+                public void run()
+                {
+                    double outResult;
+                    outResult = mc.getOutput(mosesModel, cur, mosesPeriod);
+                    if(outResult<0)
+                    {
+                        mosesOutputField.setText("No Data");
+                    }
+                    else if(outResult > 999)
+                    {
+                        DecimalFormat formatter = new DecimalFormat("#,###.00");
+                        mosesOutputField.setText(formatter.format(outResult));
+                    }
+                    else
+                    {
+                        mosesOutputField.setText(String.format("%.6f",outResult));
+                    }
+                }
+            });
+            //=======================================================================
+        }
+    }
     public void editNode(Node node){
         nsm.setRootNode(node);
         ArrayList<NodeListWrapper> neighborsList = new ArrayList<NodeListWrapper>();
@@ -932,33 +985,7 @@ public final class PanelsTopComponent extends TopComponent {
             {
                 setFileContent(value.toString(), true);
                 codePane.requestFocus();
-                final Node cur = node;
-                if(mc!=null && mc.mosesOutputReady())
-                {
-                    //=============================================================== REFACTOR
-                    SwingUtilities.invokeLater(new Runnable() 
-                    {
-                        public void run()
-                        {
-                            double outResult;
-                            outResult = mc.getOutput(mosesModel, cur, mosesPeriod);
-                            if(outResult<0)
-                            {
-                                mosesOutputField.setText("No Data");
-                            }
-                            else if(outResult > 999)
-                            {
-                                DecimalFormat formatter = new DecimalFormat("#,###.00");
-                                mosesOutputField.setText(formatter.format(outResult));
-                            }
-                            else
-                            {
-                                mosesOutputField.setText(String.format("%.6f",outResult));
-                            }
-                        }
-                    });
-                    //=======================================================================
-                }
+                updateMosesOutput(node);
             }
             else
             {
