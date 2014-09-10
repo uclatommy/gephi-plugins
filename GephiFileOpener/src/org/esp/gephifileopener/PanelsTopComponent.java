@@ -61,11 +61,11 @@ preferredID = "editCPPTopComponent")
 public final class PanelsTopComponent extends TopComponent {
     final private String ICON_PATH = "/org/esp/gephifileopener/page_white_cplusplus.png";
     final private ArrayList<Node> nextSelection = new ArrayList<Node>();
-    private final MosesController mc = new MosesController("");
+    private MosesController mc;
     private final NodeSelectionManager nsm = new NodeSelectionManager();
-    private ComboBoxRenderer renderer;
+    private final ComboBoxRenderer renderer;
     int mosesPeriod = 0;
-    String mosesDirectory = null, mosesModel = null, mosesGroup = null;
+    String mosesOuputDirectory = null, mosesModel = null, mosesGroup = null;
     
     public PanelsTopComponent() {
         initComponents();
@@ -514,7 +514,6 @@ public final class PanelsTopComponent extends TopComponent {
         if(filenameField.getText() != null){
             runCMD(tsvnRevert(filenameField.getText()));
             setFileContent(filenameField.getText(),false);
-            
         }
     }//GEN-LAST:event_revertButtonMouseClicked
 
@@ -590,10 +589,10 @@ public final class PanelsTopComponent extends TopComponent {
 
     private void chooseButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_chooseButtonMouseClicked
         // TODO add your handling code here:
-        System.out.println("You clicked the Directory button...");
-        mosesDirectory = outDirectoryField.getText();
+        //System.out.println("You clicked the Directory button...");
+        mosesOuputDirectory = outDirectoryField.getText();
         mosesModel = modelNameField.getText();
-        mc.setOutputDirectory(mosesDirectory);
+        mc.setOutputDirectory(mosesOuputDirectory);
         if(mc.mosesOutputReady())
         {
             statusLabel.setText("Ready!");
@@ -769,13 +768,22 @@ public final class PanelsTopComponent extends TopComponent {
         {
             checkSave(filename);
         }
+        if(mc==null)
+        {
+            mc = new MosesController();
+            
+            mc.setModelDirectory(Paths.get(filename).getParent().getParent().getParent().toString());
+        }
+        if(!mc.mosesFMLReady())
+        {
+            mc.setModelDirectory(Paths.get(filename).getParent().getParent().getParent().toString());
+        }
         SwingUtilities.invokeLater(new Runnable() 
         {
           public void run()
           {
             if(setFilename(filename)){
                 codePane.setText(readFile(filename));
-                mc.setModelDirectory(Paths.get(filename).getParent().getParent().getParent().toString());
                 jScrollPane1.setVisible(true);
             }
           }
@@ -815,8 +823,17 @@ public final class PanelsTopComponent extends TopComponent {
             mc.updateFML(nsm.getRootNode());
             AttributeRow row = (AttributeRow) nsm.getRootNode().getNodeData().getAttributes();
             //System.out.println("getId(): "+ currentRootNode.getId() + "getValue(): " + row.getValue("Id").toString());
-            mc.updateFML(nsm.getRootNode(),codePane.getText());
-            saveButton.setToolTipText("Saved.");
+            String saveText = codePane.getText();
+            /*
+            if(mc.mosesFMLReady() && saveText.length()<255) //foxpro odbc cannot update with more than 255 chars! but can use UPDATE table SET("255 chars" + "255chars" + ...)
+            {
+                mc.updateFML(nsm.getRootNode(),codePane.getText());
+                saveButton.setToolTipText("Saved.");
+            }
+            else
+            {*/
+                saveButton.setToolTipText("Saved. Please run Update Formulas in Moses.");
+            //}
             ToolTipManager.sharedInstance().mouseMoved(
                 new MouseEvent(saveButton, 0, 0, 0,
                         0, 0, // X-Y of the mouse for the tool tip
@@ -888,22 +905,6 @@ public final class PanelsTopComponent extends TopComponent {
    
     public void editNode(Node node){
         nsm.setRootNode(node);
-        //=============================================================== REFACTOR
-        double outResult = mc.getOutput(mosesModel, node, mosesPeriod);
-        if(outResult<0)
-        {
-            mosesOutputField.setText("No Data");
-        }
-        else if(outResult > 999)
-        {
-            DecimalFormat formatter = new DecimalFormat("#,###.00");
-            mosesOutputField.setText(formatter.format(outResult));
-        }
-        else
-        {
-            mosesOutputField.setText(String.format("%.6f",outResult));
-        }
-        //=======================================================================
         ArrayList<NodeListWrapper> neighborsList = new ArrayList<NodeListWrapper>();
         ArrayList<Integer> displayStyle = new ArrayList<Integer>();
         for(Node nnode : nsm.getNeighbors()){
@@ -933,6 +934,33 @@ public final class PanelsTopComponent extends TopComponent {
             {
                 setFileContent(value.toString(), true);
                 codePane.requestFocus();
+                final Node cur = node;
+                if(mc!=null && mc.mosesOutputReady())
+                {
+                    //=============================================================== REFACTOR
+                    SwingUtilities.invokeLater(new Runnable() 
+                    {
+                        public void run()
+                        {
+                            double outResult;
+                            outResult = mc.getOutput(mosesModel, cur, mosesPeriod);
+                            if(outResult<0)
+                            {
+                                mosesOutputField.setText("No Data");
+                            }
+                            else if(outResult > 999)
+                            {
+                                DecimalFormat formatter = new DecimalFormat("#,###.00");
+                                mosesOutputField.setText(formatter.format(outResult));
+                            }
+                            else
+                            {
+                                mosesOutputField.setText(String.format("%.6f",outResult));
+                            }
+                        }
+                    });
+                    //=======================================================================
+                }
             }
             else
             {
