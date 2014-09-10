@@ -819,21 +819,19 @@ public final class PanelsTopComponent extends TopComponent {
             FileWriter out = new FileWriter(fileToSave);
             out.write(codePane.getText());
             out.close();
-            //System.out.println("Save path is " + Paths.get(fileToSave).getParent().getParent().toString());
             mc.updateFML(nsm.getRootNode());
             AttributeRow row = (AttributeRow) nsm.getRootNode().getNodeData().getAttributes();
-            //System.out.println("getId(): "+ currentRootNode.getId() + "getValue(): " + row.getValue("Id").toString());
             String saveText = codePane.getText();
-            /*
-            if(mc.mosesFMLReady() && saveText.length()<255) //foxpro odbc cannot update with more than 255 chars! but can use UPDATE table SET("255 chars" + "255chars" + ...)
+            
+            if(mc.mosesFMLReady())
             {
                 mc.updateFML(nsm.getRootNode(),codePane.getText());
                 saveButton.setToolTipText("Saved.");
             }
             else
-            {*/
+            {
                 saveButton.setToolTipText("Saved. Please run Update Formulas in Moses.");
-            //}
+            }
             ToolTipManager.sharedInstance().mouseMoved(
                 new MouseEvent(saveButton, 0, 0, 0,
                         0, 0, // X-Y of the mouse for the tool tip

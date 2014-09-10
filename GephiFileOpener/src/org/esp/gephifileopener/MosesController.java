@@ -322,15 +322,23 @@ public class MosesController {
         String prod = row.getValue("prod").toString();
         String purp = row.getValue("purp").toString();
         try {
-            /*
-            String splitContent = "";
-            for (String part : getParts(content, 255)) {
-                splitContent = splitContent + part + "\"+\"";
+            String lines[] = content.split("\\r?\\n");
+            String qryUpdate = "";
+            int count = 0;
+            for(String line: lines)
+            {
+                line = line.replaceAll("'", "' + CHR(39) + '");
+                if(count==0)
+                {
+                    qryUpdate = "UPDATE \"FML.DBF\" set formula = '" + line +"' WHERE fmlid = " + fmlid;
+                }
+                else
+                {
+                    qryUpdate = "UPDATE \"FML.DBF\" set formula = formula + CHR(13) + CHR(10) + '" + line +"' WHERE fmlid = " + fmlid;
+                }
+                mosesFML.executeUpdate(qryUpdate);
+                count++;
             }
-                    */
-            //String qryUpdate = "UPDATE \"FML.DBF\" set formula = \"" + splitContent +"\"" + "\"\"" + "WHERE fmlid = " + fmlid;
-            String qryUpdate = "UPDATE \"FML.DBF\" set formula = \"" + content +"\" WHERE fmlid = " + fmlid;
-            mosesFML.executeUpdate(qryUpdate);
             mosesFML.executeUpdate(
                 "UPDATE \"CHGD.DBF\" SET flag = .T. WHERE product = \'"+prod+"\' AND purpose = \'"+purp+"\'"
             );
