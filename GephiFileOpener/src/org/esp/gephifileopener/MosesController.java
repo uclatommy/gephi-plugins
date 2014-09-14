@@ -12,16 +12,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import org.gephi.data.attributes.api.AttributeRow;
 import org.gephi.graph.api.Node;
 import org.openide.util.Exceptions;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -31,102 +29,10 @@ public class MosesController {
     private String modelDirectory;
     private String outputDirectory;
     private final List<List<String>> outputLookup = new ArrayList<List<String>>();
-    class foxproDB{
-        private String location;
-        private String connString;
-        private Connection conn;
-        private Statement stmt;
-        private Boolean open = false;
-        
-        private foxproDB(String loc)
-        {
-            setLocation(loc);
-            openDB();
-        }
-        
-        boolean isOpen()
-        {
-            return open;
-        }
-        
-        void openDB()
-        {
-            try{
-                Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
-                connString =    "jdbc:odbc:Driver={Microsoft Visual FoxPro Driver};SourceType=DBF;SourceDB="+location+";\n" +
-                                "Exclusive=No;Collate=Machine;NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";
-                conn = DriverManager.getConnection(connString);
-                stmt = conn.createStatement();
-                open = true;
-            }
-            catch (ClassNotFoundException ex) 
-            {
-                open = false;
-                Exceptions.printStackTrace(ex);
-            } catch (SQLException ex) {
-                open = false;
-                Exceptions.printStackTrace(ex);
-            }
-        }
-        
-        void setLocation(String loc)
-        {
-            location = loc;
-        }
-        
-        void closeDB()
-        {
-            try{
-                conn.close();
-                stmt.close();
-                open = false;
-            }
-            catch (SQLException ex)
-            {
-                Exceptions.printStackTrace(ex);
-            }
-        }
-        
-        ResultSet executeQuery(String query)
-        {
-            if(!open)
-            {
-                openDB();
-            }
-            
-            ResultSet rs;
-            try{
-                rs = stmt.executeQuery(query);
-            }
-            catch (SQLException ex)
-            {
-                Exceptions.printStackTrace(ex);
-                rs = null;
-            }
-            return rs;
-        }
-        
-        int executeUpdate(String query)
-        {
-            if(!open)
-            {
-                openDB();
-            }
-            
-            int rs;
-            try{
-                rs = stmt.executeUpdate(query);
-            }
-            catch (SQLException ex)
-            {
-                Exceptions.printStackTrace(ex);
-                rs = 0;
-            }
-            return rs;
-        }
-    }
-    foxproDB mosesOutput;
-    foxproDB mosesFML;
+    private final MosesDataManager mdm = Lookup.getDefault().lookup(MosesDataManager.class);
+    
+    FoxproDB mosesOutput;
+    FoxproDB mosesFML;
     
     public boolean mosesOutputReady()
     {
@@ -155,13 +61,14 @@ public class MosesController {
     public void setModelDirectory(String model_directory)
     {
         modelDirectory = model_directory;
-        mosesFML = new foxproDB(modelDirectory);
+        mosesFML = new FoxproDB(modelDirectory);
+        mdm.setMosesModel(modelDirectory);
     }
     
     public void setOutputDirectory(String output)
     {
         outputDirectory = output;
-        mosesOutput = new foxproDB(outputDirectory);
+        mosesOutput = new FoxproDB(outputDirectory);
     }
     
     public ArrayList<String> ms_ListModels(String PathNameBase)
@@ -226,8 +133,7 @@ public class MosesController {
                     prod + "' AND purpose = '" + purp + "' AND rectype = 3"
             );
             rs.next();
-            groupMemo = rs.getString("name");
-            //mosesOutput.closeDB();
+            groupMemo = rs.getString(1);
         } catch (SQLException ex){
             Exceptions.printStackTrace(ex);
             return "";
@@ -367,4 +273,9 @@ public class MosesController {
             newfml.close();
         }
     }
+    
+    public String getModelDirectory(){
+        return modelDirectory;        
+    }
+    
 }

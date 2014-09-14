@@ -72,6 +72,10 @@ public final class PanelsTopComponent extends TopComponent {
         setToolTipText(Bundle.HINT_editCPPTopComponent());
         renderer = new ComboBoxRenderer(neighborNodesList);
     }
+    
+    public MosesController getMosesController(){
+        return mc;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -117,6 +121,7 @@ public final class PanelsTopComponent extends TopComponent {
         modelNameField = new javax.swing.JTextField();
         outDirectoryField = new javax.swing.JTextField();
         statusLabel = new javax.swing.JLabel();
+        directoryField = new javax.swing.JTextField();
 
         setIcon(ImageUtilities.loadImage(ICON_PATH, true));
         setName("codePanel"); // NOI18N
@@ -401,6 +406,8 @@ public final class PanelsTopComponent extends TopComponent {
             }
         });
 
+        directoryField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.directoryField.text")); // NOI18N
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -408,27 +415,35 @@ public final class PanelsTopComponent extends TopComponent {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(modelNameField)
+                    .addComponent(directoryField)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(chooseButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(statusLabel)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(outDirectoryField, javax.swing.GroupLayout.DEFAULT_SIZE, 1342, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(modelNameField)
+                            .addComponent(outDirectoryField, javax.swing.GroupLayout.DEFAULT_SIZE, 1342, Short.MAX_VALUE))
+                        .addGap(0, 0, 0)
+                        .addComponent(statusLabel)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(6, 6, 6)
+                .addComponent(directoryField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(outDirectoryField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(11, 11, 11)
+                        .addComponent(statusLabel))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(modelNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(modelNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(chooseButton)
-                    .addComponent(statusLabel))
-                .addContainerGap(207, Short.MAX_VALUE))
+                .addComponent(chooseButton)
+                .addContainerGap(186, Short.MAX_VALUE))
         );
 
         codePanel.addTab(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.jPanel2.TabConstraints.tabTitle"), jPanel2); // NOI18N
@@ -599,7 +614,12 @@ public final class PanelsTopComponent extends TopComponent {
         //System.out.println("You clicked the Directory button...");
         mosesOuputDirectory = outDirectoryField.getText();
         mosesModel = modelNameField.getText();
+        if(mc==null)
+        {
+            mc = new MosesController();
+        }
         mc.setOutputDirectory(mosesOuputDirectory);
+        mc.setModelDirectory(directoryField.getText());
         if(mc.mosesOutputReady())
         {
             statusLabel.setText("Ready!");
@@ -635,6 +655,7 @@ public final class PanelsTopComponent extends TopComponent {
     private javax.swing.JToggleButton contSaveToggle;
     private javax.swing.JButton dependentsButton;
     private javax.swing.JButton diffButton;
+    private javax.swing.JTextField directoryField;
     private javax.swing.JTextField filenameField;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -961,12 +982,25 @@ public final class PanelsTopComponent extends TopComponent {
                 setFileContent(value.toString(), true);
                 codePane.requestFocus();
                 updateMosesOutput(node);
+                if(mc!=null)
+                {
+                    if(!mc.mosesFMLReady())
+                    {
+                        mc.setModelDirectory(Paths.get(value.toString()).getParent().getParent().getParent().toString());
+                    }
+                }
+                else
+                {
+                    mc = new MosesController();
+                    mc.setModelDirectory(Paths.get(value.toString()).getParent().getParent().getParent().toString());
+                }
             }
             else
             {
                 setFilename("");
             }
         }
+        
     }
     
     private String tsvnLog(String filename){
