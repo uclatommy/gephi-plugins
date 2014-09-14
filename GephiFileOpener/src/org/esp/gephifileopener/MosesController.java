@@ -322,19 +322,23 @@ public class MosesController {
         String prod = row.getValue("prod").toString();
         String purp = row.getValue("purp").toString();
         try {
-            String lines[] = content.split("\\r?\\n");
+            List<String> lines = getParts(content, 255);
+            //String lines[] = content.split("\\n");
             String qryUpdate = "";
             int count = 0;
             for(String line: lines)
             {
                 line = line.replaceAll("'", "' + CHR(39) + '");
+                line = line.replaceAll("\\r\\n", "' + CHR(13) + CHR(10) + '");
+                line = line.replaceAll("\\r", "' + CHR(13) +'");
+                line = line.replaceAll("\\n","' + CHR(10) +'");
                 if(count==0)
                 {
-                    qryUpdate = "UPDATE \"FML.DBF\" set formula = '" + line +"' WHERE fmlid = " + fmlid;
+                    qryUpdate = "UPDATE \"FML.DBF\" set formula = '" + line +"' + '' WHERE fmlid = " + fmlid;
                 }
                 else
                 {
-                    qryUpdate = "UPDATE \"FML.DBF\" set formula = formula + CHR(13) + CHR(10) + '" + line +"' WHERE fmlid = " + fmlid;
+                    qryUpdate = "UPDATE \"FML.DBF\" set formula = formula + '" + line +"' + '' WHERE fmlid = " + fmlid;
                 }
                 mosesFML.executeUpdate(qryUpdate);
                 count++;
