@@ -733,15 +733,17 @@ public final class PanelsTopComponent extends TopComponent {
     private ArrayList<Integer> findAll(String find)
     {
         ArrayList<Integer> foundIndices = new ArrayList<Integer>();
-        find = find.replaceAll("\r", "");
-        int lastIndex = codePane.getText().lastIndexOf(find);
+        String searchText = codePane.getText();
+        searchText = searchText.replaceAll("(\\r)", "");
+        int lastIndex = searchText.lastIndexOf(find);
+        
         int i=0;
         int found;
         if(lastIndex>-1)
         {
             while(i<lastIndex)
             {
-                found = codePane.getText().indexOf(find, i);
+                found = searchText.indexOf(find, i);
                 if(found>-1)
                 {
                     i=i+find.length();
