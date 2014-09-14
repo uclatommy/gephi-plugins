@@ -20,15 +20,14 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import jsyntaxpane.DefaultSyntaxKit;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeRow;
 import org.gephi.data.attributes.api.AttributeTable;
-import org.gephi.graph.api.Attributes;
 import org.gephi.graph.api.Node;
-import org.gephi.graph.api.NodeData;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -110,7 +109,7 @@ public final class PanelsTopComponent extends TopComponent {
         jScrollPane1 = new javax.swing.JScrollPane();
         codePane = new javax.swing.JEditorPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        neighborNodesList = new javax.swing.JList<NodeListWrapper>();
+        neighborNodesList = new javax.swing.JList<MosesNode>();
         periodField = new javax.swing.JTextField();
         mosesOutputField = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -369,9 +368,8 @@ public final class PanelsTopComponent extends TopComponent {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(periodField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(mosesOutputField, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(periodField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(mosesOutputField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jToolBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -501,6 +499,7 @@ public final class PanelsTopComponent extends TopComponent {
             checkSave(filenameField.getText()); //potential bug
             SwingUtilities.invokeLater(new Runnable() 
             {
+                @Override
                 public void run()
                 {
                   runCMD(tsvnCommit(filenameField.getText()));
@@ -650,7 +649,7 @@ public final class PanelsTopComponent extends TopComponent {
     private javax.swing.JToolBar jToolBar4;
     private javax.swing.JTextField modelNameField;
     private javax.swing.JLabel mosesOutputField;
-    private javax.swing.JList<NodeListWrapper> neighborNodesList;
+    private javax.swing.JList<MosesNode> neighborNodesList;
     private javax.swing.JButton openButton;
     private javax.swing.JTextField outDirectoryField;
     private javax.swing.JButton parentDirButton;
@@ -723,7 +722,7 @@ public final class PanelsTopComponent extends TopComponent {
                 {
                     h.addHighlight(i, i+find.length(), new DefaultHighlighter.DefaultHighlightPainter(c));
                 }
-                catch(Exception e)
+                catch(BadLocationException e)
                 {
                     Exceptions.printStackTrace(e);
                 }
@@ -734,6 +733,7 @@ public final class PanelsTopComponent extends TopComponent {
     private ArrayList<Integer> findAll(String find)
     {
         ArrayList<Integer> foundIndices = new ArrayList<Integer>();
+        find = find.replaceAll("\r", "");
         int lastIndex = codePane.getText().lastIndexOf(find);
         int i=0;
         int found;
@@ -797,6 +797,7 @@ public final class PanelsTopComponent extends TopComponent {
         }
         SwingUtilities.invokeLater(new Runnable() 
         {
+          @Override
           public void run()
           {
             if(setFilename(filename)){
@@ -890,35 +891,6 @@ public final class PanelsTopComponent extends TopComponent {
             e.printStackTrace(System.err);
         }
     }
-    class NodeListWrapper implements Node{
-        private final Node node;
-        NodeListWrapper(Node inNode){
-            node = inNode;
-        }
-        public Node getNode(){
-            return node;
-        }
-        @Override
-        public String toString(){
-            AttributeRow row = (AttributeRow) node.getNodeData().getAttributes();
-            return row.getValue("prod") + "_" + row.getValue("purp") + "->" + node.getNodeData().getLabel();
-        }
-
-        @Override
-        public int getId() {
-            return node.getId();
-        }
-
-        @Override
-        public NodeData getNodeData() {
-            return node.getNodeData();
-        }
-
-        @Override
-        public Attributes getAttributes() {
-            return node.getAttributes();
-        }
-    }
     
     public void setPairNode(Node node)
     {
@@ -932,6 +904,7 @@ public final class PanelsTopComponent extends TopComponent {
             //=============================================================== REFACTOR
             SwingUtilities.invokeLater(new Runnable() 
             {
+                @Override
                 public void run()
                 {
                     double outResult;
@@ -956,10 +929,10 @@ public final class PanelsTopComponent extends TopComponent {
     }
     public void editNode(Node node){
         nsm.setRootNode(node);
-        ArrayList<NodeListWrapper> neighborsList = new ArrayList<NodeListWrapper>();
+        ArrayList<MosesNode> neighborsList = new ArrayList<MosesNode>();
         ArrayList<Integer> displayStyle = new ArrayList<Integer>();
         for(Node nnode : nsm.getNeighbors()){
-            neighborsList.add(new NodeListWrapper(nnode));
+            neighborsList.add(new MosesNode(nnode));
             if(nsm.isDependent(nnode))
             {
                 displayStyle.add((Integer) 0);
@@ -972,7 +945,7 @@ public final class PanelsTopComponent extends TopComponent {
         renderer.setStyle(displayStyle);
         renderer.setNodes(neighborsList);
         neighborNodesList.setCellRenderer(renderer);
-        NodeListWrapper[] tempNLW = new NodeListWrapper[neighborsList.size()];  //create a temporary array
+        MosesNode[] tempNLW = new MosesNode[neighborsList.size()];  //create a temporary array
         tempNLW = neighborsList.toArray(tempNLW);                               //convert neighborsList to array using the typed temp array as argument
         neighborNodesList.setListData(tempNLW);
         AttributeTable table = Lookup.getDefault().lookup(AttributeController.class).getModel().getNodeTable();

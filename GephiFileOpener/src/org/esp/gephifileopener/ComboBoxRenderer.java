@@ -13,7 +13,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
-import org.esp.gephifileopener.PanelsTopComponent.NodeListWrapper;
 
 /**
  *
@@ -23,19 +22,19 @@ class ComboBoxRenderer extends JPanel implements ListCellRenderer
 {
 
     private static final long serialVersionUID = -1L;
-    private ArrayList<NodeListWrapper> nodes;
+    private ArrayList<MosesNode> nodes;
     private ArrayList<Integer> styles;
 
     JPanel textPanel;
     JLabel text;
     
-    public ComboBoxRenderer(JList<NodeListWrapper> list) {
+    public ComboBoxRenderer(JList<MosesNode> list) {
         text = new JLabel();
         text.setOpaque(true);
         text.setFont(list.getFont());
     }
     
-    public void setNodes(ArrayList<NodeListWrapper> nod)
+    public void setNodes(ArrayList<MosesNode> nod)
     {
         nodes = nod;
     }
@@ -45,7 +44,7 @@ class ComboBoxRenderer extends JPanel implements ListCellRenderer
         styles = s;
     }
     
-    public ArrayList<NodeListWrapper> getNodes()
+    public ArrayList<MosesNode> getNodes()
     {
         return nodes;
     }
@@ -64,7 +63,7 @@ class ComboBoxRenderer extends JPanel implements ListCellRenderer
             return this;
         }
         if (index>-1) {
-            NodeListWrapper cur = nodes.get(index);
+            MosesNode cur = nodes.get(index);
             Color nodeColor = new Color(cur.getNodeData().r(),cur.getNodeData().g(),cur.getNodeData().b());
             if (isSelected)
             {

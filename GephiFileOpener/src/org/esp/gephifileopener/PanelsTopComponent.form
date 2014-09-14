@@ -85,10 +85,8 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jToolBar3" min="-2" pref="25" max="-2" attributes="0"/>
-                          <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                              <Component id="periodField" alignment="1" min="-2" max="-2" attributes="0"/>
-                              <Component id="mosesOutputField" alignment="1" min="-2" pref="20" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="periodField" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="mosesOutputField" alignment="1" min="-2" pref="20" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jToolBar4" min="-2" pref="23" max="-2" attributes="0"/>
@@ -436,7 +434,7 @@
                         <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="neighborNodesListValueChanged"/>
                       </Events>
                       <AuxValues>
-                        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;NodeListWrapper&gt;"/>
+                        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;MosesNode&gt;"/>
                       </AuxValues>
                     </Component>
                   </SubComponents>
