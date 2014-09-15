@@ -141,7 +141,7 @@ import org.openide.util.lookup.ServiceProvider;
             Exceptions.printStackTrace(ex);
         }
         
-        strEdges = "CREATE TABLE " + modelDirectory + "\\EDGES ('Id' I, 'Target' I, 'Source' I, 'Type' C(20))";
+        strEdges = "CREATE TABLE \"" + modelDirectory + "\\EDGES.DBF\" ('Id' I, 'Target' I, 'Source' I, 'Type' C(20))";
         mosesModel.executeUpdate(strEdges);
         strEdges = "SELECT token.fmlid as Target, token.itemid as Source FROM \"" + modelDirectory + "\\TOKEN.DBF\" WHERE token.itemid <> -1 AND token.fmlid <> -1";
         rs = selectQry.executeQuery(strEdges);
@@ -178,7 +178,7 @@ import org.openide.util.lookup.ServiceProvider;
             mosesModel.closeDB();
         }
         mosesModel.setLocation(modelDirectory);
-        String strNodes = "CREATE TABLE " + modelDirectory + "\\NODES ('Id' I, 'Label' C(50), 'Prod' C(20), 'Purp' C(20), "
+        String strNodes = "CREATE TABLE \"" + modelDirectory + "\\NODES.DBF\" ('Id' I, 'Label' C(50), 'Prod' C(20), 'Purp' C(20), "
                 + "'Type' C(20), 'Category' C(50) NULL, 'cppfile' C(254))";
         mosesModel.executeUpdate(strNodes);
         
