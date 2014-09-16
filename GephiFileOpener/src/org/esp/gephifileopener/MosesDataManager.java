@@ -186,7 +186,7 @@ import org.openide.util.lookup.ServiceProvider;
         strNodes = "SELECT fml.fmlid as Id, fml.form_name as Label, fml.fproduct as Prod, fml.fpurpose as Purp, catg.category as Category FROM \"" +
                 modelDirectory + "\\FML.DBF\", \"" + modelDirectory + "\\CATG.DBF\" WHERE fml.cat_id = catg.cat_id UNION " +
                 "SELECT fml.fmlid as Id, fml.form_name as Label, fml.fproduct as Prod, fml.fpurpose as Purp, '' as Category FROM \"" +
-                modelDirectory + "\\FML.DBF\", \"" + modelDirectory + "\\CATG.DBF\" WHERE LTRIM(RTRIM(fml.cat_id)) = ''";
+                modelDirectory + "\\FML.DBF\" WHERE fml.cat_id NOT IN (SELECT catg.cat_id FROM \"" + modelDirectory + "\\CATG.DBF\")";
         ResultSet rs = selectQry.executeQuery(strNodes);
         int rowcount = 0;
         try {
@@ -207,7 +207,7 @@ import org.openide.util.lookup.ServiceProvider;
         strNodes = "SELECT var.varid as Id, var.v_name as Label, var.product as Prod, var.purpose as Purp, catg.category as Category FROM \"" +
                 modelDirectory + "\\VAR.DBF\", \"" + modelDirectory + "\\CATG.DBF\" WHERE var.cat_id = catg.cat_id UNION " +
                 "SELECT var.varid as Id, var.v_name as Label, var.product as Prod, var.purpose as Purp, '' as Category FROM \"" +
-                modelDirectory + "\\VAR.DBF\", \"" + modelDirectory + "\\CATG.DBF\" WHERE LTRIM(RTRIM(var.cat_id)) = ''";
+                modelDirectory + "\\VAR.DBF\" WHERE var.cat_id NOT IN (SELECT catg.cat_id FROM \"" + modelDirectory + "\\CATG.DBF\")";
         rs = selectQry.executeQuery(strNodes);
         rowcount = 0;
         try {
