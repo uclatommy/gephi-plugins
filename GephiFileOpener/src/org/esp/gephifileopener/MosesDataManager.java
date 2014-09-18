@@ -13,6 +13,7 @@ import org.gephi.io.importer.api.ContainerLoader;
 import org.gephi.io.importer.api.EdgeDraft;
 import org.gephi.io.importer.api.NodeDraft;
 import org.gephi.utils.longtask.spi.LongTask;
+import org.gephi.utils.progress.Progress;
 import org.gephi.utils.progress.ProgressTicket;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
@@ -38,6 +39,8 @@ import org.openide.util.lookup.ServiceProvider;
  
     @Override
     public void generate(ContainerLoader container) {
+        Progress.setDisplayName(progress, "Importing Moses Nodes...");
+        Progress.start(progress);
         
         ResultSet mosesNodes = getMosesNodes();
         ResultSet mosesEdges = getMosesEdges();
@@ -85,6 +88,7 @@ import org.openide.util.lookup.ServiceProvider;
             Exceptions.printStackTrace(ex);
         }
         mosesModel.closeDB();
+        Progress.finish(progress);
     }
     
     private ResultSet getMosesEdges()
