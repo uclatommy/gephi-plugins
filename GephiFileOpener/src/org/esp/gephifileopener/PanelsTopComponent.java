@@ -951,13 +951,13 @@ public final class PanelsTopComponent extends TopComponent {
         ArrayList<Integer> displayStyle = new ArrayList<Integer>();
         for(Node nnode : nsm.getNeighbors()){
             neighborsList.add(new MosesNode(nnode));
-            if(nsm.isDependent(nnode))
+            if(nsm.isPrecedent(nnode))
             {
-                displayStyle.add((Integer) 0);
+                displayStyle.add((Integer) 1);
             }
             else
             {
-                displayStyle.add((Integer) 1);
+                displayStyle.add((Integer) 0);
             }
         }
         renderer.setStyle(displayStyle);
