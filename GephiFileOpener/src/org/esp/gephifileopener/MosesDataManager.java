@@ -48,13 +48,17 @@ import org.openide.util.lookup.ServiceProvider;
         AttributeColumn cppfile = container.getAttributeModel().getNodeTable().addColumn("cppfile", AttributeType.STRING);
         AttributeColumn prod = container.getAttributeModel().getNodeTable().addColumn("prod", AttributeType.STRING);
         AttributeColumn purp = container.getAttributeModel().getNodeTable().addColumn("purp", AttributeType.STRING);
+        AttributeColumn submodel = container.getAttributeModel().getNodeTable().addColumn("submodel", AttributeType.STRING);
         AttributeColumn type = container.getAttributeModel().getNodeTable().addColumn("type", AttributeType.STRING);
         AttributeColumn category = container.getAttributeModel().getNodeTable().addColumn("category", AttributeType.STRING);
+        AttributeColumn level = container.getAttributeModel().getNodeTable().addColumn("[z]", AttributeType.INT);
+        int levelcount;
+        String unique_nm;
         try {
             while(mosesNodes.next())
             {
                 NodeDraft n = container.factory().newNodeDraft();
-                n.setId(mosesNodes.getString("Id"));
+                n.setId(mosesNodes.getString("mId").trim() + mosesNodes.getString("Id").trim());
                 //String id = mosesNodes.getString("Id");
                 //if(container.getNode(id)==null)
                 //{
@@ -63,8 +67,12 @@ import org.openide.util.lookup.ServiceProvider;
                 n.addAttributeValue(cppfile, mosesNodes.getString("cppfile").trim());
                 n.addAttributeValue(prod, mosesNodes.getString("prod").trim());
                 n.addAttributeValue(purp, mosesNodes.getString("purp").trim());
+                n.addAttributeValue(submodel, mosesNodes.getString("submodel").trim());
                 n.addAttributeValue(type, mosesNodes.getString("type").trim());
                 n.addAttributeValue(category, mosesNodes.getString("category").trim());
+                unique_nm = mosesNodes.getString("unique_nm").trim();
+                levelcount = unique_nm.length() - unique_nm.replace("|", "").length();
+                n.addAttributeValue(level, levelcount);
                 container.addNode(n);
                 //}
                 //else
@@ -75,13 +83,12 @@ import org.openide.util.lookup.ServiceProvider;
         } catch (SQLException ex) {
             Exceptions.printStackTrace(ex);
         }
-        
         try {
             while(mosesEdges.next())
             {
                EdgeDraft e = container.factory().newEdgeDraft();
-               e.setSource(container.getNode(mosesEdges.getString("Source")));
-               e.setTarget(container.getNode(mosesEdges.getString("Target")));
+               e.setSource(container.getNode(mosesEdges.getString("Source").trim()));
+               e.setTarget(container.getNode(mosesEdges.getString("Target").trim()));
                container.addEdge(e);
             }
         } catch (SQLException ex) {
@@ -145,24 +152,29 @@ import org.openide.util.lookup.ServiceProvider;
             Exceptions.printStackTrace(ex);
         }
         
-        strEdges = "CREATE TABLE \"" + modelDirectory + "\\EDGES.DBF\" ('Id' I, 'Target' I, 'Source' I, 'Type' C(20))";
+        strEdges = "CREATE TABLE \"" + modelDirectory + "\\EDGES.DBF\" ('Id' I, 'Target' C(11), 'Source' C(11), 'Type' C(20))";
         mosesModel.executeUpdate(strEdges);
-        strEdges = "SELECT token.fmlid as Target, token.itemid as Source FROM \"" + modelDirectory + "\\TOKEN.DBF\" WHERE token.itemid <> -1 AND token.fmlid <> -1";
+        strEdges = "SELECT token.tokenid as Id, token.fmlid as Target, token.itemid as Source, nodes.mid as Target_mId, ABS(token.modelid) as Source_mId FROM \"" + modelDirectory + "\\TOKEN.DBF\", \"" + modelDirectory + "\\NODES.DBF\" WHERE token.itemid > 0 AND token.fmlid = nodes.id";
         rs = selectQry.executeQuery(strEdges);
-        int autoid = 0;
-        String target, source;
+        String target, source, target_mid, source_mid, tokenid;
         
         try {
             while(rs.next())
             {
                 target = rs.getString("Target");
                 source = rs.getString("Source");
-                if(map.get(source)!=null && map.get(target)!=null)
+                target_mid = rs.getString("Target_mId");
+                source_mid = rs.getString("Source_mId");
+                tokenid = rs.getString("Id");
+                if("0".equals(source_mid))
+                {
+                    source_mid = target_mid;
+                }
+                //if(map.get(source)!=null && map.get(target)!=null)
                 {
                     strEdges = "INSERT INTO \"" + modelDirectory + "\\EDGES.DBF\" (Id, Target, Source, Type) VALUES (" +
-                            autoid + ", " + map.get(target) + "," + map.get(source) + ", \"Directed\")";
+                            tokenid + ", '" + target_mid + map.get(target) + "', '" + source_mid + map.get(source) + "', \"Directed\")";
                     mosesModel.executeUpdate(strEdges);
-                    autoid++;
                 }
             }
         } catch (SQLException ex) {
@@ -182,25 +194,25 @@ import org.openide.util.lookup.ServiceProvider;
             mosesModel.closeDB();
         }
         mosesModel.setLocation(modelDirectory);
-        String strNodes = "CREATE TABLE \"" + modelDirectory + "\\NODES.DBF\" ('Id' I, 'Label' C(50), 'Prod' C(20), 'Purp' C(20), "
-                + "'Type' C(20), 'Category' C(50) NULL, 'cppfile' C(254))";
+        String strNodes = "CREATE TABLE \"" + modelDirectory + "\\NODES.DBF\" ('mId' I, 'Id' I, 'Submodel' C(20), 'Label' C(50), 'Prod' C(20), 'Purp' C(20), "
+                + "'Type' C(20), 'Category' C(50) NULL, 'cppfile' C(254), 'unique_nm' C(254))";
         mosesModel.executeUpdate(strNodes);
         
         //FML
-        strNodes = "SELECT fml.fmlid as Id, fml.form_name as Label, fml.fproduct as Prod, fml.fpurpose as Purp, catg.category as Category FROM \"" +
-                modelDirectory + "\\FML.DBF\", \"" + modelDirectory + "\\CATG.DBF\" WHERE fml.cat_id = catg.cat_id UNION " +
-                "SELECT fml.fmlid as Id, fml.form_name as Label, fml.fproduct as Prod, fml.fpurpose as Purp, '' as Category FROM \"" +
-                modelDirectory + "\\FML.DBF\" WHERE fml.cat_id NOT IN (SELECT catg.cat_id FROM \"" + modelDirectory + "\\CATG.DBF\")";
+        strNodes = "SELECT modelset.modelid as mId, fml.fmlid as Id, modelset.sm_name as Submodel, fml.form_name as Label, fml.fproduct as Prod, fml.fpurpose as Purp, catg.category as Category, modelset.unique_nm as unique_nm FROM \"" +
+                modelDirectory + "\\FML.DBF\", \"" + modelDirectory + "\\CATG.DBF\", \"" + modelDirectory + "\\MODELSET.DBF\" WHERE fml.cat_id = catg.cat_id AND fml.fproduct = modelset.product AND fml.fpurpose = modelset.purpose UNION " +
+                "SELECT modelset.modelid as mId, fml.fmlid as Id, modelset.sm_name as Submodel, fml.form_name as Label, fml.fproduct as Prod, fml.fpurpose as Purp, '' as Category, modelset.unique_nm as unique_nm FROM \"" +
+                modelDirectory + "\\FML.DBF\", \"" + modelDirectory + "\\MODELSET.DBF\" WHERE (fml.cat_id NOT IN (SELECT catg.cat_id FROM \"" + modelDirectory + "\\CATG.DBF\")) AND fml.fproduct = modelset.product AND fml.fpurpose = modelset.purpose";
         ResultSet rs = selectQry.executeQuery(strNodes);
         int rowcount = 0;
         try {
             while(rs.next())
             {
                 rowcount++;
-                strNodes = "INSERT INTO NODES (Id, Label, Prod, Purp, Type, Category, cppfile) VALUES (" + rs.getString("Id").trim()
-                        + ", '" + rs.getString("Label").trim() + "', '" + rs.getString("Prod").trim() + "', '" + rs.getString("Purp").trim() 
+                strNodes = "INSERT INTO NODES (mId, Id, Submodel, Label, Prod, Purp, Type, Category, cppfile, unique_nm) VALUES (" + rs.getString("mId").trim() + ", " + rs.getString("Id").trim()
+                        + ", '" + rs.getString("Submodel").trim() + "', '" + rs.getString("Label").trim() + "', '" + rs.getString("Prod").trim() + "', '" + rs.getString("Purp").trim() 
                         + "', 'FML', '" + rs.getString("Category").trim() + "', '" + modelDirectory + "\\Source\\FML\\" + rs.getString("Prod").trim() 
-                        + "_" + rs.getString("Purp").trim() + "_" + rs.getString("Label").trim() + ".cpp')";
+                        + "_" + rs.getString("Purp").trim() + "_" + rs.getString("Label").trim() + ".cpp', '" + rs.getString("unique_nm") +"')";
         mosesModel.executeUpdate(strNodes);
             }
         } catch (SQLException ex) {
@@ -208,19 +220,19 @@ import org.openide.util.lookup.ServiceProvider;
         }
         System.out.println("FML Query: " + rowcount);
         //VAR
-        strNodes = "SELECT var.varid as Id, var.v_name as Label, var.product as Prod, var.purpose as Purp, catg.category as Category FROM \"" +
-                modelDirectory + "\\VAR.DBF\", \"" + modelDirectory + "\\CATG.DBF\" WHERE var.cat_id = catg.cat_id UNION " +
-                "SELECT var.varid as Id, var.v_name as Label, var.product as Prod, var.purpose as Purp, '' as Category FROM \"" +
-                modelDirectory + "\\VAR.DBF\" WHERE var.cat_id NOT IN (SELECT catg.cat_id FROM \"" + modelDirectory + "\\CATG.DBF\")";
+        strNodes = "SELECT modelset.modelid as mId, var.varid as Id, modelset.sm_name as Submodel, var.v_name as Label, var.product as Prod, var.purpose as Purp, catg.category as Category, modelset.unique_nm as unique_nm FROM \"" +
+                modelDirectory + "\\VAR.DBF\", \"" + modelDirectory + "\\CATG.DBF\", \"" + modelDirectory + "\\MODELSET.DBF\" WHERE var.cat_id = catg.cat_id AND var.product = modelset.product AND var.purpose = modelset.purpose UNION " +
+                "SELECT modelset.modelid as mId, var.varid as Id, modelset.sm_name as Submodel, var.v_name as Label, var.product as Prod, var.purpose as Purp, '' as Category, modelset.unique_nm as unique_nm FROM \"" +
+                modelDirectory + "\\VAR.DBF\", \"" + modelDirectory + "\\MODELSET.DBF\" WHERE (var.cat_id NOT IN (SELECT catg.cat_id FROM \"" + modelDirectory + "\\CATG.DBF\")) AND var.product = modelset.product AND var.purpose = modelset.purpose";
         rs = selectQry.executeQuery(strNodes);
         rowcount = 0;
         try {
             while(rs.next())
             {
                 rowcount++;
-                strNodes = "INSERT INTO NODES (Id, Label, Prod, Purp, Type, Category, cppfile) VALUES (" + rs.getString("Id").trim()
-                        + ", '" + rs.getString("Label").trim() + "', '" + rs.getString("Prod").trim() + "', '" + rs.getString("Purp").trim() 
-                        + "', 'VAR', '" + rs.getString("Category").trim() + "', '')";
+                strNodes = "INSERT INTO NODES (mId, Id, Submodel, Label, Prod, Purp, Type, Category, cppfile, unique_nm) VALUES (" + rs.getString("mId").trim() + ", " + rs.getString("Id").trim()
+                        + ", '" + rs.getString("Submodel").trim() + "', '" + rs.getString("Label").trim() + "', '" + rs.getString("Prod").trim() + "', '" + rs.getString("Purp").trim() 
+                        + "', 'VAR', '" + rs.getString("Category").trim() + "', '', '"+ rs.getString("unique_nm") +"')";
         mosesModel.executeUpdate(strNodes);
             }
         } catch (SQLException ex) {
