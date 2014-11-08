@@ -52,6 +52,7 @@ import org.openide.util.lookup.ServiceProvider;
         AttributeColumn type = container.getAttributeModel().getNodeTable().addColumn("type", AttributeType.STRING);
         AttributeColumn category = container.getAttributeModel().getNodeTable().addColumn("category", AttributeType.STRING);
         AttributeColumn level = container.getAttributeModel().getNodeTable().addColumn("[z]", AttributeType.INT);
+        AttributeColumn subpath = container.getAttributeModel().getNodeTable().addColumn("unique_nm", AttributeType.STRING);
         int levelcount;
         String unique_nm;
         try {
@@ -73,6 +74,7 @@ import org.openide.util.lookup.ServiceProvider;
                 unique_nm = mosesNodes.getString("unique_nm").trim();
                 levelcount = unique_nm.length() - unique_nm.replace("|", "").length();
                 n.addAttributeValue(level, levelcount);
+                n.addAttributeValue(subpath, unique_nm);
                 container.addNode(n);
                 //}
                 //else

@@ -556,12 +556,24 @@ public final class PanelsTopComponent extends TopComponent {
         Node gotoNode = (neighborNodesList.getSelectedValue()).getNode();
         if(gotoNode!=null)
         {
+            String subpath = (String)gotoNode.getNodeData().getAttributes().getValue("unique_nm");
+            String curpath = (String)nsm.getRootNode().getNodeData().getAttributes().getValue("unique_nm");
+            String search;
+            if(subpath.equals(curpath))
+            {
+                search = gotoNode.getNodeData().getLabel();
+            }
+            else
+            {
+                String[] parts = subpath.split("\\|");
+                search = parts[parts.length-1]+"->"+gotoNode.getNodeData().getLabel();
+            }
             if(evt.getClickCount() == 1 && !evt.isConsumed()){
                 evt.consume();
                 //nsm.resetSelection();
                 setPairNode(gotoNode);
                 Color c = new Color(gotoNode.getNodeData().r(),gotoNode.getNodeData().g(),gotoNode.getNodeData().b());
-                markAll(gotoNode.getNodeData().getLabel(),renderer.mixColor(c, Color.WHITE));
+                markAll(search,renderer.mixColor(c, Color.WHITE),true);
             }
             if(evt.getClickCount() == 2 && !evt.isConsumed()){
                 evt.consume();
@@ -725,10 +737,10 @@ public final class PanelsTopComponent extends TopComponent {
         return true;
     }
     
-    public void markAll(String find, Color c)
+    public void markAll(String find, Color c, boolean clear)
     {
         Highlighter h = codePane.getHighlighter();
-        h.removeAllHighlights();
+        if(clear)h.removeAllHighlights();
         ArrayList<Integer> allFound = findAll(find);
         if(allFound!=null)
         {

@@ -124,28 +124,12 @@ public class MosesController {
     
     public String getSubModel(String model, Node node)
     {
-        String prod = (String)node.getNodeData().getAttributes().getValue("prod");
-        String purp = (String)node.getNodeData().getAttributes().getValue("purp");
-        String groupMemo = "";
-        try{
-            ResultSet rs = mosesOutput.executeQuery(
-                    "SELECT name FROM \"" + model + "$INFO.DBF\" WHERE product = '" + 
-                    prod + "' AND purpose = '" + purp + "' AND rectype = 3"
-            );
-            rs.next();
-            groupMemo = rs.getString(1);
-        } catch (SQLException ex){
-            Exceptions.printStackTrace(ex);
-            return "";
-        }
-        if(!groupMemo.equals(""))
-        {
-            String[] memosplit = groupMemo.split(",");
-            String result = memosplit[0].replaceAll("\"", "");
-            result = result.replaceAll("\\|", "~");
-            return "~" + result;
-        }
-        return "";
+        String result = (String)node.getNodeData().getAttributes().getValue("unique_nm");
+        
+        result = result.replaceAll("\\|", "~");
+        result = result.replaceAll("\\[\"", "~");
+        result = result.replaceAll("\"\\]", "");
+        return "~" + result;
     }
     
     public String getColumnName(String model, Node node)
