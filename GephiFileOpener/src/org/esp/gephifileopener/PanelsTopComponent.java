@@ -30,6 +30,7 @@ import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeRow;
 import org.gephi.data.attributes.api.AttributeTable;
 import org.gephi.graph.api.Node;
+import org.gephi.tools.api.EditWindowController;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -63,6 +64,7 @@ public final class PanelsTopComponent extends TopComponent {
     final private String ICON_PATH = "/org/esp/gephifileopener/page_white_cplusplus.png";
     final private ArrayList<Node> nextSelection = new ArrayList<Node>();
     private MosesController mc;
+    private EditWindowController edc;
     private final NodeSelectionManager nsm = new NodeSelectionManager();
     private final ComboBoxRenderer renderer;
     int mosesPeriod = 0;
@@ -73,6 +75,7 @@ public final class PanelsTopComponent extends TopComponent {
         setName(Bundle.CTL_editCPPTopComponent());
         setToolTipText(Bundle.HINT_editCPPTopComponent());
         renderer = new ComboBoxRenderer(neighborNodesList);
+        edc=Lookup.getDefault().lookup(EditWindowController.class);
     }
     
     public MosesController getMosesController(){
@@ -448,11 +451,14 @@ public final class PanelsTopComponent extends TopComponent {
                 setPairNode(gotoNode);
                 Color c = new Color(gotoNode.getNodeData().r(),gotoNode.getNodeData().g(),gotoNode.getNodeData().b());
                 markAll(search,renderer.mixColor(c, Color.WHITE),true);
+                updateMosesOutput(gotoNode);
+                edc.editNode(gotoNode);
             }
             if(evt.getClickCount() == 2 && !evt.isConsumed()){
                 evt.consume();
                 //sm.centerOnNode(gotoNode);
                 editNode(gotoNode);
+                edc.editNode(gotoNode);
                 codePane.requestFocusInWindow();
             }
         }
@@ -461,6 +467,8 @@ public final class PanelsTopComponent extends TopComponent {
     private void codePaneFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codePaneFocusGained
         // TODO add your handling code here:
         nsm.setSelection();
+        updateMosesOutput(nsm.getRootNode());
+        edc.editNode(nsm.getRootNode());
     }//GEN-LAST:event_codePaneFocusGained
 
     private void repoBrowseButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_repoBrowseButtonMouseClicked
