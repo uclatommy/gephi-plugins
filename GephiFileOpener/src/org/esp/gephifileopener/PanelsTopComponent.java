@@ -467,8 +467,8 @@ public final class PanelsTopComponent extends TopComponent {
     private void codePaneFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codePaneFocusGained
         // TODO add your handling code here:
         nsm.setSelection();
-        updateMosesOutput(nsm.getRootNode());
-        edc.editNode(nsm.getRootNode());
+        //updateMosesOutput(nsm.getRootNode());
+        //edc.editNode(nsm.getRootNode());
     }//GEN-LAST:event_codePaneFocusGained
 
     private void repoBrowseButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_repoBrowseButtonMouseClicked
@@ -907,11 +907,11 @@ public final class PanelsTopComponent extends TopComponent {
                 {
                     double outResult;
                     outResult = mc.getOutput(mosesModel, cur, mosesPeriod);
-                    if(outResult<0)
+                    if(Double.isNaN(outResult))
                     {
                         mosesOutputField.setText("No Data");
                     }
-                    else if(outResult > 999)
+                    else if(outResult > 999 || outResult < -999)
                     {
                         DecimalFormat formatter = new DecimalFormat("#,###.00");
                         mosesOutputField.setText(formatter.format(outResult));

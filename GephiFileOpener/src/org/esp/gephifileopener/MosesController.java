@@ -60,6 +60,12 @@ public class MosesController {
             return false;
         }
     }
+
+    public boolean dbfExists(String tablename)
+    {
+        File f = new File(outputDirectory + "\\" + tablename + ".dbf");
+        return f.exists();
+    }
     
     public void setModelDirectory(String model_directory)
     {
@@ -171,20 +177,24 @@ public class MosesController {
     
     public double getOutput(String model, Node node, int period)
     {
-        double result = -1.0;
+        double result = Double.NaN;
         String submodel = getSubModel(model, node);
         if(!submodel.equals(""))
         {
             String tableName = model + getSubModel(model, node);
-            String columnName = getColumnName(model, node);
+            String columnName = "";
+            if(dbfExists(tableName))
+            {
+                columnName = getColumnName(model, node);
+            }
             if(!columnName.equals(""))
             {
                 try
                 {
-                    String qryString = "SELECT * FROM \"" + tableName.trim() + ".DBF\" WHERE period = '" + period + "'";
+                    String qryString = "SELECT SUM("+columnName+") AS qry_result FROM \"" + tableName.trim() + ".DBF\" WHERE period = '" + period + "'";
                     ResultSet rs = mosesOutput.executeQuery(qryString);
                     rs.next();
-                    result = rs.getDouble(columnName);
+                    result = rs.getDouble("qry_result");
                     //mosesOutput.closeDB();
                 } 
                 catch (SQLException ex)
