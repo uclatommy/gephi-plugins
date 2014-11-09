@@ -18,8 +18,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
@@ -96,6 +98,8 @@ public final class PanelsTopComponent extends TopComponent {
         precedentsButton = new javax.swing.JButton();
         resetButton = new javax.swing.JButton();
         dependentsButton = new javax.swing.JButton();
+        jSeparator5 = new javax.swing.JToolBar.Separator();
+        outputButton = new javax.swing.JButton();
         jToolBar4 = new javax.swing.JToolBar();
         refreshButton = new javax.swing.JButton();
         filenameField = new javax.swing.JTextField();
@@ -116,12 +120,6 @@ public final class PanelsTopComponent extends TopComponent {
         neighborNodesList = new javax.swing.JList<MosesNode>();
         periodField = new javax.swing.JTextField();
         mosesOutputField = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
-        chooseButton = new javax.swing.JButton();
-        modelNameField = new javax.swing.JTextField();
-        outDirectoryField = new javax.swing.JTextField();
-        statusLabel = new javax.swing.JLabel();
-        directoryField = new javax.swing.JTextField();
 
         setIcon(ImageUtilities.loadImage(ICON_PATH, true));
         setName("codePanel"); // NOI18N
@@ -206,6 +204,19 @@ public final class PanelsTopComponent extends TopComponent {
             }
         });
         jToolBar3.add(dependentsButton);
+        jToolBar3.add(jSeparator5);
+
+        outputButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/esp/gephifileopener/coins.png"))); // NOI18N
+        outputButton.setToolTipText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.outputButton.toolTipText")); // NOI18N
+        outputButton.setFocusable(false);
+        outputButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        outputButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        outputButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                outputButtonMouseClicked(evt);
+            }
+        });
+        jToolBar3.add(outputButton);
 
         jToolBar4.setFloatable(false);
 
@@ -385,64 +396,6 @@ public final class PanelsTopComponent extends TopComponent {
 
         codePanel.addTab(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.jPanel1.TabConstraints.tabTitle"), jPanel1); // NOI18N
 
-        org.openide.awt.Mnemonics.setLocalizedText(chooseButton, org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.chooseButton.text")); // NOI18N
-        chooseButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                chooseButtonMouseClicked(evt);
-            }
-        });
-
-        modelNameField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.modelNameField.text")); // NOI18N
-        modelNameField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                modelNameFieldFocusGained(evt);
-            }
-        });
-
-        outDirectoryField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.outDirectoryField.text")); // NOI18N
-        outDirectoryField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                outDirectoryFieldFocusGained(evt);
-            }
-        });
-
-        directoryField.setText(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.directoryField.text")); // NOI18N
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(directoryField)
-                    .addComponent(modelNameField, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(outDirectoryField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1342, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(chooseButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(statusLabel)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(directoryField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(outDirectoryField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(modelNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(chooseButton)
-                    .addComponent(statusLabel))
-                .addContainerGap(186, Short.MAX_VALUE))
-        );
-
-        codePanel.addTab(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.jPanel2.TabConstraints.tabTitle"), jPanel2); // NOI18N
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -461,95 +414,16 @@ public final class PanelsTopComponent extends TopComponent {
         codePanel.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(PanelsTopComponent.class, "PanelsTopComponent.codePanel.AccessibleContext.accessibleName")); // NOI18N
     }// </editor-fold>//GEN-END:initComponents
 
-    private void openButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openButtonMouseClicked
+    private void periodFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_periodFieldFocusLost
         // TODO add your handling code here:
-        String filename = filenameField.getText();
-        File cpp = new File(filename);
-        if(cpp.isFile() && cpp.exists())
-        {
-            if(contSaveToggle.isSelected())
-            {
-                checkSave(filenameField.getText()); //potential bug
-            }
-            editFile(cpp);
-        }
-    }//GEN-LAST:event_openButtonMouseClicked
+        mosesPeriod = Integer.parseInt(periodField.getText());
+        updateMosesOutput(nsm.getRootNode());
+    }//GEN-LAST:event_periodFieldFocusLost
 
-    private void refreshButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_refreshButtonMouseClicked
+    private void neighborNodesListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_neighborNodesListValueChanged
         // TODO add your handling code here:
-        setFileContent(filenameField.getText(),false);
-    }//GEN-LAST:event_refreshButtonMouseClicked
-
-    private void saveButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveButtonMouseClicked
-        // TODO add your handling code here:
-        checkSave(filenameField.getText()); //potential bug
-    }//GEN-LAST:event_saveButtonMouseClicked
-
-    private void saveButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveButtonMouseExited
-        // TODO add your handling code here:
-        saveButton.setToolTipText("Save the file.");
-    }//GEN-LAST:event_saveButtonMouseExited
-
-    private void repoLogButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_repoLogButtonMouseClicked
-        if(filenameField.getText() != null){
-            runCMD(tsvnLog(filenameField.getText()));
-        }
-    }//GEN-LAST:event_repoLogButtonMouseClicked
-
-    private void repoBrowseButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_repoBrowseButtonMouseClicked
-        // TODO add your handling code here:
-        if(filenameField.getText() != null){
-            runCMD(tsvnRepoBrowser(filenameField.getText()));
-        }
-    }//GEN-LAST:event_repoBrowseButtonMouseClicked
-
-    private void commitButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_commitButtonMouseClicked
-        // TODO add your handling code here:
-        if(filenameField.getText() != null){
-            checkSave(filenameField.getText()); //potential bug
-            SwingUtilities.invokeLater(new Runnable() 
-            {
-                @Override
-                public void run()
-                {
-                  runCMD(tsvnCommit(filenameField.getText()));
-                }
-            });
-        }
-    }//GEN-LAST:event_commitButtonMouseClicked
-
-    private void updateButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_updateButtonMouseClicked
-        // TODO add your handling code here:
-        if(filenameField.getText() != null){
-            runCMD(tsvnUpdate(filenameField.getText(), true));
-            setFileContent(filenameField.getText(),false);
-        }
-    }//GEN-LAST:event_updateButtonMouseClicked
-
-    private void revertButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_revertButtonMouseClicked
-        // TODO add your handling code here:
-        if(filenameField.getText() != null){
-            runCMD(tsvnRevert(filenameField.getText()));
-            setFileContent(filenameField.getText(),false);
-        }
-    }//GEN-LAST:event_revertButtonMouseClicked
-
-    private void diffButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_diffButtonMouseClicked
-        // TODO add your handling code here:
-        if(filenameField.getText() != null){
-            runCMD(tsvnDiff(filenameField.getText()));
-        }
-    }//GEN-LAST:event_diffButtonMouseClicked
-
-    private void parentDirButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_parentDirButtonMouseClicked
-        // TODO add your handling code here:
-        File file = new File(filenameField.getText());
-        if (!file.isDirectory() && file.isFile())
-           file = file.getParentFile();
-        if (file.exists() && file.isDirectory()){
-            editFile(file);
-        }
-    }//GEN-LAST:event_parentDirButtonMouseClicked
+        nsm.resetSelection();
+    }//GEN-LAST:event_neighborNodesListValueChanged
 
     private void neighborNodesListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_neighborNodesListMouseClicked
         // TODO add your handling code here:
@@ -589,26 +463,114 @@ public final class PanelsTopComponent extends TopComponent {
         nsm.setSelection();
     }//GEN-LAST:event_codePaneFocusGained
 
+    private void repoBrowseButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_repoBrowseButtonMouseClicked
+        // TODO add your handling code here:
+        if(filenameField.getText() != null){
+            runCMD(tsvnRepoBrowser(filenameField.getText()));
+        }
+    }//GEN-LAST:event_repoBrowseButtonMouseClicked
+
+    private void diffButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_diffButtonMouseClicked
+        // TODO add your handling code here:
+        if(filenameField.getText() != null){
+            runCMD(tsvnDiff(filenameField.getText()));
+        }
+    }//GEN-LAST:event_diffButtonMouseClicked
+
+    private void repoLogButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_repoLogButtonMouseClicked
+        if(filenameField.getText() != null){
+            runCMD(tsvnLog(filenameField.getText()));
+        }
+    }//GEN-LAST:event_repoLogButtonMouseClicked
+
+    private void revertButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_revertButtonMouseClicked
+        // TODO add your handling code here:
+        if(filenameField.getText() != null){
+            runCMD(tsvnRevert(filenameField.getText()));
+            setFileContent(filenameField.getText(),false);
+        }
+    }//GEN-LAST:event_revertButtonMouseClicked
+
+    private void updateButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_updateButtonMouseClicked
+        // TODO add your handling code here:
+        if(filenameField.getText() != null){
+            runCMD(tsvnUpdate(filenameField.getText(), true));
+            setFileContent(filenameField.getText(),false);
+        }
+    }//GEN-LAST:event_updateButtonMouseClicked
+
+    private void commitButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_commitButtonMouseClicked
+        // TODO add your handling code here:
+        if(filenameField.getText() != null){
+            checkSave(filenameField.getText()); //potential bug
+            SwingUtilities.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        runCMD(tsvnCommit(filenameField.getText()));
+                    }
+                });
+            }
+    }//GEN-LAST:event_commitButtonMouseClicked
+
     private void centerOnNodeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_centerOnNodeMouseClicked
         // TODO add your handling code here:
         nsm.centerOnRoot();
         codePane.requestFocusInWindow();
     }//GEN-LAST:event_centerOnNodeMouseClicked
 
-    private void neighborNodesListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_neighborNodesListValueChanged
+    private void refreshButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_refreshButtonMouseClicked
         // TODO add your handling code here:
-        nsm.resetSelection();
-    }//GEN-LAST:event_neighborNodesListValueChanged
+        setFileContent(filenameField.getText(),false);
+    }//GEN-LAST:event_refreshButtonMouseClicked
+
+    private void outputButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_outputButtonMouseClicked
+        // TODO add your handling code here:
+        class MosesOutputFileFilter extends FileFilter
+        {
+            @Override
+            public boolean accept(File file)
+            {
+                return (file.isDirectory() || file.getName().endsWith("$INFO.DBF"));
+            }
+            @Override
+            public String getDescription() {
+                return "Moses Output";
+            }
+        }
+        JFileChooser chooser;
+        if(mc==null)
+        {
+            mc = new MosesController();
+        }
+        if(mosesOuputDirectory!=null)
+        {
+            chooser = new JFileChooser(mosesOuputDirectory);
+        }
+        else if(mc.getModelDirectory()!=null)
+        {
+
+            chooser = new JFileChooser(mc.getModelDirectory());
+        }
+        else
+        {
+            chooser = new JFileChooser();
+        }
+        MosesOutputFileFilter filter = new MosesOutputFileFilter();
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(null);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+            mosesOuputDirectory =  chooser.getSelectedFile().getParent();
+            mosesModel = chooser.getSelectedFile().getName().replaceAll("\\$INFO.DBF", "");
+            mc.setOutputDirectory(mosesOuputDirectory);
+        }
+    }//GEN-LAST:event_outputButtonMouseClicked
 
     private void dependentsButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dependentsButtonMouseClicked
         // TODO add your handling code here:
         nsm.pushDependents();
     }//GEN-LAST:event_dependentsButtonMouseClicked
-
-    private void precedentsButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_precedentsButtonMousePressed
-        // TODO add your handling code here:
-        nsm.pushPrecedents();
-    }//GEN-LAST:event_precedentsButtonMousePressed
 
     private void resetButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_resetButtonMouseClicked
         // TODO add your handling code here:
@@ -616,70 +578,69 @@ public final class PanelsTopComponent extends TopComponent {
         requestFocus();
     }//GEN-LAST:event_resetButtonMouseClicked
 
-    private void chooseButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_chooseButtonMouseClicked
+    private void precedentsButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_precedentsButtonMousePressed
         // TODO add your handling code here:
-        //System.out.println("You clicked the Directory button...");
-        mosesOuputDirectory = outDirectoryField.getText();
-        mosesModel = modelNameField.getText();
-        if(mc==null)
-        {
-            mc = new MosesController();
-        }
-        mc.setOutputDirectory(mosesOuputDirectory);
-        mc.setModelDirectory(directoryField.getText());
-        if(mc.mosesOutputReady())
-        {
-            statusLabel.setText("Ready!");
-        }
-        else
-        {
-            statusLabel.setText("Error! Please check output path.");
-        }
-    }//GEN-LAST:event_chooseButtonMouseClicked
+        nsm.pushPrecedents();
+    }//GEN-LAST:event_precedentsButtonMousePressed
 
-    private void periodFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_periodFieldFocusLost
+    private void openButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openButtonMouseClicked
         // TODO add your handling code here:
-        mosesPeriod = Integer.parseInt(periodField.getText());
-        updateMosesOutput(nsm.getRootNode());
-    }//GEN-LAST:event_periodFieldFocusLost
+        String filename = filenameField.getText();
+        File cpp = new File(filename);
+        if(cpp.isFile() && cpp.exists())
+        {
+            if(contSaveToggle.isSelected())
+            {
+                checkSave(filenameField.getText()); //potential bug
+            }
+            editFile(cpp);
+        }
+    }//GEN-LAST:event_openButtonMouseClicked
 
-    private void outDirectoryFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_outDirectoryFieldFocusGained
+    private void parentDirButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_parentDirButtonMouseClicked
         // TODO add your handling code here:
-        outDirectoryField.selectAll();
-    }//GEN-LAST:event_outDirectoryFieldFocusGained
+        File file = new File(filenameField.getText());
+        if (!file.isDirectory() && file.isFile())
+        file = file.getParentFile();
+        if (file.exists() && file.isDirectory()){
+            editFile(file);
+        }
+    }//GEN-LAST:event_parentDirButtonMouseClicked
 
-    private void modelNameFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_modelNameFieldFocusGained
+    private void saveButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveButtonMouseExited
         // TODO add your handling code here:
-        modelNameField.selectAll();
-    }//GEN-LAST:event_modelNameFieldFocusGained
+        saveButton.setToolTipText("Save the file.");
+    }//GEN-LAST:event_saveButtonMouseExited
+
+    private void saveButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveButtonMouseClicked
+        // TODO add your handling code here:
+        checkSave(filenameField.getText()); //potential bug
+    }//GEN-LAST:event_saveButtonMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton centerOnNode;
-    private javax.swing.JButton chooseButton;
     private javax.swing.JEditorPane codePane;
     private javax.swing.JTabbedPane codePanel;
     private javax.swing.JButton commitButton;
     private javax.swing.JToggleButton contSaveToggle;
     private javax.swing.JButton dependentsButton;
     private javax.swing.JButton diffButton;
-    private javax.swing.JTextField directoryField;
     private javax.swing.JTextField filenameField;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JToolBar.Separator jSeparator4;
+    private javax.swing.JToolBar.Separator jSeparator5;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JToolBar jToolBar3;
     private javax.swing.JToolBar jToolBar4;
-    private javax.swing.JTextField modelNameField;
     private javax.swing.JLabel mosesOutputField;
     private javax.swing.JList<MosesNode> neighborNodesList;
     private javax.swing.JButton openButton;
-    private javax.swing.JTextField outDirectoryField;
+    private javax.swing.JButton outputButton;
     private javax.swing.JButton parentDirButton;
     private javax.swing.JTextField periodField;
     private javax.swing.JButton precedentsButton;
@@ -689,7 +650,6 @@ public final class PanelsTopComponent extends TopComponent {
     private javax.swing.JButton resetButton;
     private javax.swing.JButton revertButton;
     private javax.swing.JButton saveButton;
-    private javax.swing.JLabel statusLabel;
     private javax.swing.JButton updateButton;
     // End of variables declaration//GEN-END:variables
     @Override

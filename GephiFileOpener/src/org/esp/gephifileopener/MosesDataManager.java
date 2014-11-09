@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.JFileChooser;
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeType;
 import org.gephi.io.generator.spi.Generator;
@@ -39,65 +40,68 @@ import org.openide.util.lookup.ServiceProvider;
  
     @Override
     public void generate(ContainerLoader container) {
-        Progress.setDisplayName(progress, "Importing Moses Nodes...");
-        Progress.start(progress);
-        
-        ResultSet mosesNodes = getMosesNodes();
-        ResultSet mosesEdges = getMosesEdges();
-                     // create nodes
-        AttributeColumn cppfile = container.getAttributeModel().getNodeTable().addColumn("cppfile", AttributeType.STRING);
-        AttributeColumn prod = container.getAttributeModel().getNodeTable().addColumn("prod", AttributeType.STRING);
-        AttributeColumn purp = container.getAttributeModel().getNodeTable().addColumn("purp", AttributeType.STRING);
-        AttributeColumn submodel = container.getAttributeModel().getNodeTable().addColumn("submodel", AttributeType.STRING);
-        AttributeColumn type = container.getAttributeModel().getNodeTable().addColumn("type", AttributeType.STRING);
-        AttributeColumn category = container.getAttributeModel().getNodeTable().addColumn("category", AttributeType.STRING);
-        AttributeColumn level = container.getAttributeModel().getNodeTable().addColumn("[z]", AttributeType.INT);
-        AttributeColumn subpath = container.getAttributeModel().getNodeTable().addColumn("unique_nm", AttributeType.STRING);
-        int levelcount;
-        String unique_nm;
-        try {
-            while(mosesNodes.next())
-            {
-                NodeDraft n = container.factory().newNodeDraft();
-                n.setId(mosesNodes.getString("mId").trim() + mosesNodes.getString("Id").trim());
-                //String id = mosesNodes.getString("Id");
-                //if(container.getNode(id)==null)
-                //{
-                //n.setId(id);
-                n.setLabel(mosesNodes.getString("Label").trim());
-                n.addAttributeValue(cppfile, mosesNodes.getString("cppfile").trim());
-                n.addAttributeValue(prod, mosesNodes.getString("prod").trim());
-                n.addAttributeValue(purp, mosesNodes.getString("purp").trim());
-                n.addAttributeValue(submodel, mosesNodes.getString("submodel").trim());
-                n.addAttributeValue(type, mosesNodes.getString("type").trim());
-                n.addAttributeValue(category, mosesNodes.getString("category").trim());
-                unique_nm = mosesNodes.getString("unique_nm").trim();
-                levelcount = unique_nm.length() - unique_nm.replace("|", "").length();
-                n.addAttributeValue(level, levelcount);
-                n.addAttributeValue(subpath, unique_nm);
-                container.addNode(n);
-                //}
-                //else
-                //{
-                //    System.out.println(id + "already exists!");
-                //}
+        if(setMosesModel())
+        {
+            Progress.setDisplayName(progress, "Importing Moses Nodes...");
+            Progress.start(progress);
+
+            ResultSet mosesNodes = getMosesNodes();
+            ResultSet mosesEdges = getMosesEdges();
+                         // create nodes
+            AttributeColumn cppfile = container.getAttributeModel().getNodeTable().addColumn("cppfile", AttributeType.STRING);
+            AttributeColumn prod = container.getAttributeModel().getNodeTable().addColumn("prod", AttributeType.STRING);
+            AttributeColumn purp = container.getAttributeModel().getNodeTable().addColumn("purp", AttributeType.STRING);
+            AttributeColumn submodel = container.getAttributeModel().getNodeTable().addColumn("submodel", AttributeType.STRING);
+            AttributeColumn type = container.getAttributeModel().getNodeTable().addColumn("type", AttributeType.STRING);
+            AttributeColumn category = container.getAttributeModel().getNodeTable().addColumn("category", AttributeType.STRING);
+            AttributeColumn level = container.getAttributeModel().getNodeTable().addColumn("[z]", AttributeType.INT);
+            AttributeColumn subpath = container.getAttributeModel().getNodeTable().addColumn("unique_nm", AttributeType.STRING);
+            int levelcount;
+            String unique_nm;
+            try {
+                while(mosesNodes.next())
+                {
+                    NodeDraft n = container.factory().newNodeDraft();
+                    n.setId(mosesNodes.getString("mId").trim() + mosesNodes.getString("Id").trim());
+                    //String id = mosesNodes.getString("Id");
+                    //if(container.getNode(id)==null)
+                    //{
+                    //n.setId(id);
+                    n.setLabel(mosesNodes.getString("Label").trim());
+                    n.addAttributeValue(cppfile, mosesNodes.getString("cppfile").trim());
+                    n.addAttributeValue(prod, mosesNodes.getString("prod").trim());
+                    n.addAttributeValue(purp, mosesNodes.getString("purp").trim());
+                    n.addAttributeValue(submodel, mosesNodes.getString("submodel").trim());
+                    n.addAttributeValue(type, mosesNodes.getString("type").trim());
+                    n.addAttributeValue(category, mosesNodes.getString("category").trim());
+                    unique_nm = mosesNodes.getString("unique_nm").trim();
+                    levelcount = unique_nm.length() - unique_nm.replace("|", "").length();
+                    n.addAttributeValue(level, levelcount);
+                    n.addAttributeValue(subpath, unique_nm);
+                    container.addNode(n);
+                    //}
+                    //else
+                    //{
+                    //    System.out.println(id + "already exists!");
+                    //}
+                }
+            } catch (SQLException ex) {
+                Exceptions.printStackTrace(ex);
             }
-        } catch (SQLException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-        try {
-            while(mosesEdges.next())
-            {
-               EdgeDraft e = container.factory().newEdgeDraft();
-               e.setSource(container.getNode(mosesEdges.getString("Source").trim()));
-               e.setTarget(container.getNode(mosesEdges.getString("Target").trim()));
-               container.addEdge(e);
+            try {
+                while(mosesEdges.next())
+                {
+                   EdgeDraft e = container.factory().newEdgeDraft();
+                   e.setSource(container.getNode(mosesEdges.getString("Source").trim()));
+                   e.setTarget(container.getNode(mosesEdges.getString("Target").trim()));
+                   container.addEdge(e);
+                }
+            } catch (SQLException ex) {
+                Exceptions.printStackTrace(ex);
             }
-        } catch (SQLException ex) {
-            Exceptions.printStackTrace(ex);
+            mosesModel.closeDB();
+            Progress.finish(progress);
         }
-        mosesModel.closeDB();
-        Progress.finish(progress);
     }
     
     private ResultSet getMosesEdges()
@@ -267,9 +271,34 @@ import org.openide.util.lookup.ServiceProvider;
         this.progress = progressTicket;
     }
     
-    public void setMosesModel(String model_directory)
+    public boolean setMosesModel()
     {
-        modelDirectory = model_directory;
-        mosesModel = new FoxproDB(model_directory);
+        JFileChooser chooser;
+        if(modelDirectory!=null)
+        {    
+            chooser = new JFileChooser(modelDirectory);
+        }
+        else
+        {
+            chooser = new JFileChooser();
+        }
+        chooser.setDialogTitle("Select Model Directory To Import");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
+        { 
+            modelDirectory = chooser.getSelectedFile().getAbsolutePath();
+            mosesModel = new FoxproDB(modelDirectory);
+            return true;
+        }
+        else
+        {
+          return false;
+        }
+    }
+    
+    public String getMosesModel()
+    {
+        return modelDirectory;
     }
  }

@@ -26,13 +26,16 @@ import org.openide.util.Lookup;
  * @author thchen
  */
 public class MosesController {
-    private String modelDirectory;
     private String outputDirectory;
     private final List<List<String>> outputLookup = new ArrayList<List<String>>();
     private final MosesDataManager mdm = Lookup.getDefault().lookup(MosesDataManager.class);
     
     FoxproDB mosesOutput;
     FoxproDB mosesFML;
+    
+    public String getModelDirectory(){
+        return mdm.getMosesModel();        
+    }
     
     public boolean mosesOutputReady()
     {
@@ -60,9 +63,7 @@ public class MosesController {
     
     public void setModelDirectory(String model_directory)
     {
-        modelDirectory = model_directory;
-        mosesFML = new FoxproDB(modelDirectory);
-        mdm.setMosesModel(modelDirectory);
+        mosesFML = new FoxproDB(mdm.getMosesModel());
     }
     
     public void setOutputDirectory(String output)
@@ -257,9 +258,4 @@ public class MosesController {
             newfml.close();
         }
     }
-    
-    public String getModelDirectory(){
-        return modelDirectory;        
-    }
-    
 }
